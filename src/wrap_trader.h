@@ -1,4 +1,4 @@
-#ifndef N_TRADER_H_
+ï»¿#ifndef N_TRADER_H_
 #define N_TRADER_H_
 
 #include "stdafx.h"
@@ -8,6 +8,7 @@
 #include <map>
 #include <fstream>
 #include <node.h>
+#include <node_object_wrap.h>
 #include "ThostFtdcTraderApi.h"
 #include "ThostFtdcUserApiDataType.h"
 #include <uv.h>
@@ -25,44 +26,44 @@ public:
 	WrapTrader(void);
 	~WrapTrader(void);
 
-	///Á¬½ÓÇ°ÖÃ»ú
-	static Handle<Value> Connect(const Arguments& args);	
-	///×¢²áÊÂ¼ş
-	static Handle<Value> On(const Arguments& args);
-	///ÓÃ»§µÇÂ¼ÇëÇó
-	static Handle<Value> ReqUserLogin(const Arguments& args);
-	///µÇ³öÇëÇó 
-	static Handle<Value> ReqUserLogout(const Arguments& args);
-	///Í¶×ÊÕß½áËã½á¹ûÈ·ÈÏ
-	static Handle<Value> ReqSettlementInfoConfirm(const Arguments& args);
-	///ÇëÇó²éÑ¯ºÏÔ¼
-	static Handle<Value> ReqQryInstrument(const Arguments& args);
-	///ÇëÇó²éÑ¯×Ê½ğÕË»§
-	static Handle<Value> ReqQryTradingAccount(const Arguments& args);
-	///ÇëÇó²éÑ¯Í¶×ÊÕß³Ö²Ö
-	static Handle<Value> ReqQryInvestorPosition(const Arguments& args);
-	///³Ö²ÖÃ÷Ï¸
-	static Handle<Value> ReqQryInvestorPositionDetail(const Arguments& args);
-	///±¨µ¥Â¼ÈëÇëÇó
-	static Handle<Value> ReqOrderInsert(const Arguments& args);
-	///±¨µ¥²Ù×÷ÇëÇó
-	static Handle<Value> ReqOrderAction(const Arguments& args);
-	///ÇëÇó²éÑ¯ºÏÔ¼±£Ö¤½ğÂÊ 
-	static Handle<Value> ReqQryInstrumentMarginRate(const Arguments& args);
-	///ÇëÇó²éÑ¯ĞĞÇé 
-	static Handle<Value> ReqQryDepthMarketData(const Arguments& args);
-	///ÇëÇó²éÑ¯Í¶×ÊÕß½áËã½á¹û 
-	static Handle<Value> ReqQrySettlementInfo(const Arguments& args);
-	///É¾³ı½Ó¿Ú¶ÔÏó
-	static Handle<Value> Disposed(const Arguments& args);
-	//¶ÔÏó³õÊ¼»¯
+	///è¿æ¥å‰ç½®æœº
+	static Handle<Value> Connect(const FunctionCallbackInfo<Value>& args);	
+	///æ³¨å†Œäº‹ä»¶
+	static Handle<Value> On(const FunctionCallbackInfo<Value>& args);
+	///ç”¨æˆ·ç™»å½•è¯·æ±‚
+	static Handle<Value> ReqUserLogin(const FunctionCallbackInfo<Value>& args);
+	///ç™»å‡ºè¯·æ±‚ 
+	static Handle<Value> ReqUserLogout(const FunctionCallbackInfo<Value>& args);
+	///æŠ•èµ„è€…ç»“ç®—ç»“æœç¡®è®¤
+	static Handle<Value> ReqSettlementInfoConfirm(const FunctionCallbackInfo<Value>& args);
+	///è¯·æ±‚æŸ¥è¯¢åˆçº¦
+	static Handle<Value> ReqQryInstrument(const FunctionCallbackInfo<Value>& args);
+	///è¯·æ±‚æŸ¥è¯¢èµ„é‡‘è´¦æˆ·
+	static Handle<Value> ReqQryTradingAccount(const FunctionCallbackInfo<Value>& args);
+	///è¯·æ±‚æŸ¥è¯¢æŠ•èµ„è€…æŒä»“
+	static Handle<Value> ReqQryInvestorPosition(const FunctionCallbackInfo<Value>& args);
+	///æŒä»“æ˜ç»†
+	static Handle<Value> ReqQryInvestorPositionDetail(const FunctionCallbackInfo<Value>& args);
+	///æŠ¥å•å½•å…¥è¯·æ±‚
+	static Handle<Value> ReqOrderInsert(const FunctionCallbackInfo<Value>& args);
+	///æŠ¥å•æ“ä½œè¯·æ±‚
+	static Handle<Value> ReqOrderAction(const FunctionCallbackInfo<Value>& args);
+	///è¯·æ±‚æŸ¥è¯¢åˆçº¦ä¿è¯é‡‘ç‡ 
+	static Handle<Value> ReqQryInstrumentMarginRate(const FunctionCallbackInfo<Value>& args);
+	///è¯·æ±‚æŸ¥è¯¢è¡Œæƒ… 
+	static Handle<Value> ReqQryDepthMarketData(const FunctionCallbackInfo<Value>& args);
+	///è¯·æ±‚æŸ¥è¯¢æŠ•èµ„è€…ç»“ç®—ç»“æœ 
+	static Handle<Value> ReqQrySettlementInfo(const FunctionCallbackInfo<Value>& args);
+	///åˆ é™¤æ¥å£å¯¹è±¡
+	static Handle<Value> Disposed(const FunctionCallbackInfo<Value>& args);
+	//å¯¹è±¡åˆå§‹åŒ–
 	static void Init(int args);
-	static Handle<Value> NewInstance(const Arguments& args);
-    static Handle<Value> GetTradingDay(const Arguments& args);
+	static Handle<Value> NewInstance(const FunctionCallbackInfo<Value>& args);
+    static Handle<Value> GetTradingDay(const FunctionCallbackInfo<Value>& args);
 
 private:
 	static void initEventMap();	
-	static Handle<Value> New(const Arguments& args);
+	static Handle<Value> New(const FunctionCallbackInfo<Value>& args);
 	static void pkg_cb_userlogin(CbRtnField* data, Local<Value>*cbArray);
 	static void pkg_cb_userlogout(CbRtnField* data, Local<Value>*cbArray);
 	static void pkg_cb_confirm(CbRtnField* data, Local<Value>*cbArray);

@@ -1,4 +1,4 @@
-ctp = require('bindings')('shifctp');
+ctp = require('bindings')('ctp');
 ctp.settings({ log: true});
 var trader = ctp.createTrader();
 

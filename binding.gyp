@@ -1,12 +1,10 @@
 {
   "targets": [
     {
-      "target_name": "shifctp",
-      "sources": [ "src/shifctp.cc","src/tools.cc","src/stdafx.cpp","src/uv_mduser.cpp","src/uv_trader.cpp","src/wrap_mduser.cpp","src/wrap_trader.cpp" ],
-      "libraries":["/root/github/node-ctp/6.3.0_20140811_traderapi_linux64/thostmduserapi.so","/root/github/node-ctp/6.3.0_20140811_traderapi_linux64/thosttraderapi.so"],
-      "include_dirs":["6.3.0_20140811_traderapi_linux64/"]
+      "target_name": "ctp",
+      "sources": [ "src/ctp.cc","src/tools.cc","src/stdafx.cpp","src/uv_mduser.cpp","src/uv_trader.cpp","src/wrap_mduser.cpp","src/wrap_trader.cpp" ],
+      "libraries":["20160628_tradeapi64_windows/thostmduserapi.lib","20160628_tradeapi64_windows/thosttraderapi.lib"],
+      "include_dirs":["20160628_tradeapi64_windows/", "src"]
     }
   ],
 }
-
-

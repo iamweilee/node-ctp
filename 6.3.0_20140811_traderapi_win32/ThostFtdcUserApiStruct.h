@@ -654,6 +654,10 @@ struct CThostFtdcTradingAccountField
 	TThostFtdcMoneyType	SpecProductPositionProfitByAlg;
 	///特殊产品交易所保证金
 	TThostFtdcMoneyType	SpecProductExchangeMargin;
+	///期权平仓盈亏
+	TThostFtdcMoneyType	OptionCloseProfit;
+	///期权市值
+	TThostFtdcMoneyType	OptionValue;
 };
 
 ///投资者持仓
@@ -745,6 +749,8 @@ struct CThostFtdcInvestorPositionField
 	TThostFtdcMoneyType	StrikeFrozenAmount;
 	///放弃执行冻结
 	TThostFtdcVolumeType	AbandonFrozen;
+	///期权市值
+	TThostFtdcMoneyType	OptionValue;
 };
 
 ///合约保证金率
@@ -2005,6 +2011,10 @@ struct CThostFtdcSyncingTradingAccountField
 	TThostFtdcMoneyType	SpecProductPositionProfitByAlg;
 	///特殊产品交易所保证金
 	TThostFtdcMoneyType	SpecProductExchangeMargin;
+	///期权平仓盈亏
+	TThostFtdcMoneyType	OptionCloseProfit;
+	///期权市值
+	TThostFtdcMoneyType	OptionValue;
 };
 
 ///正在同步中的投资者持仓
@@ -2096,6 +2106,8 @@ struct CThostFtdcSyncingInvestorPositionField
 	TThostFtdcMoneyType	StrikeFrozenAmount;
 	///放弃执行冻结
 	TThostFtdcVolumeType	AbandonFrozen;
+	///期权市值
+	TThostFtdcMoneyType	OptionValue;
 };
 
 ///正在同步中的合约保证金率
@@ -3294,10 +3306,6 @@ struct CThostFtdcInputQuoteField
 	TThostFtdcHedgeFlagType	AskHedgeFlag;
 	///买投机套保标志
 	TThostFtdcHedgeFlagType	BidHedgeFlag;
-	///衍生卖报单引用
-	TThostFtdcOrderRefType	AskOrderRef;
-	///衍生买报单引用
-	TThostFtdcOrderRefType	BidOrderRef;
 };
 
 ///输入报价操作
@@ -3414,10 +3422,6 @@ struct CThostFtdcQuoteField
 	TThostFtdcUserIDType	ActiveUserID;
 	///经纪公司报价编号
 	TThostFtdcSequenceNoType	BrokerQuoteSeq;
-	///衍生卖报单引用
-	TThostFtdcOrderRefType	AskOrderRef;
-	///衍生买报单引用
-	TThostFtdcOrderRefType	BidOrderRef;
 };
 
 ///报价操作
@@ -3655,8 +3659,6 @@ struct CThostFtdcForQuoteRspField
 	TThostFtdcTimeType	ForQuoteTime;
 	///业务日期
 	TThostFtdcDateType	ActionDay;
-	///交易所代码
-	TThostFtdcExchangeIDType	ExchangeID;
 };
 
 ///当前期权合约执行偏移值的详细内容
@@ -5274,30 +5276,6 @@ struct CThostFtdcInvestorProductGroupMarginField
 	TThostFtdcMoneyType	ShortExchOffsetAmount;
 	///投机套保标志
 	TThostFtdcHedgeFlagType	HedgeFlag;
-};
-
-///查询监控中心用户令牌
-struct CThostFtdcQueryCFMMCTradingAccountTokenField
-{
-	///经纪公司代码
-	TThostFtdcBrokerIDType	BrokerID;
-	///投资者代码
-	TThostFtdcInvestorIDType	InvestorID;
-};
-
-///监控中心用户令牌
-struct CThostFtdcCFMMCTradingAccountTokenField
-{
-	///经纪公司代码
-	TThostFtdcBrokerIDType	BrokerID;
-	///经纪公司统一编码
-	TThostFtdcParticipantIDType	ParticipantID;
-	///投资者帐号
-	TThostFtdcAccountIDType	AccountID;
-	///密钥编号
-	TThostFtdcSequenceNoType	KeyID;
-	///动态令牌
-	TThostFtdcCFMMCTokenType	Token;
 };
 
 ///转帐开户请求

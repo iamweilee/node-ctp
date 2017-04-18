@@ -1,4 +1,4 @@
-#include <node.h>
+﻿#include <node.h>
 #include "wrap_trader.h"
 
 Persistent<Function> WrapTrader::constructor;
@@ -20,61 +20,33 @@ WrapTrader::~WrapTrader(void) {
 	logger_cout("wrap_trader------>object destroyed");
 }
 
-void WrapTrader::Init(int args) {
+void WrapTrader::Init(Isolate *isolate) {
 	// Prepare constructor template
 	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	tpl->SetClassName(String::NewSymbol("WrapTrader"));
+	tpl->SetClassName(String::NewFromUtf8(isolate, "WrapTrader"));
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
+
 	// Prototype
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("on"),
-		FunctionTemplate::New(On)->GetFunction());
+	NODE_SET_PROTOTYPE_METHOD(tpl, "on", On);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "connect", Connect);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqUserLogin", ReqUserLogin);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqUserLogout", ReqUserLogout);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqSettlementInfoConfirm", ReqSettlementInfoConfirm);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqQryInstrument", ReqQryInstrument);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqQryTradingAccount", ReqQryTradingAccount);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqQryInvestorPosition", ReqQryInvestorPosition);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqQryInvestorPositionDetail", ReqQryInvestorPositionDetail);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqOrderInsert", ReqOrderInsert);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqOrderAction", ReqOrderAction);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqQryInstrumentMarginRate", ReqQryInstrumentMarginRate);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqQryDepthMarketData", ReqQryDepthMarketData);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqQrySettlementInfo", ReqQrySettlementInfo);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "disconnect", Disposed);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "getTradingDay", GetTradingDay);
 
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("connect"),
-		FunctionTemplate::New(Connect)->GetFunction());	
 
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("reqUserLogin"),
-		FunctionTemplate::New(ReqUserLogin)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("reqUserLogout"),
-		FunctionTemplate::New(ReqUserLogout)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("reqSettlementInfoConfirm"),
-		FunctionTemplate::New(ReqSettlementInfoConfirm)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("reqQryInstrument"),
-		FunctionTemplate::New(ReqQryInstrument)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("reqQryTradingAccount"),
-		FunctionTemplate::New(ReqQryTradingAccount)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("reqQryInvestorPosition"),
-		FunctionTemplate::New(ReqQryInvestorPosition)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("reqQryInvestorPositionDetail"),
-		FunctionTemplate::New(ReqQryInvestorPositionDetail)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("reqOrderInsert"),
-		FunctionTemplate::New(ReqOrderInsert)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("reqOrderAction"),
-		FunctionTemplate::New(ReqOrderAction)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("reqQryInstrumentMarginRate"),
-		FunctionTemplate::New(ReqQryInstrumentMarginRate)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("reqQryDepthMarketData"),
-		FunctionTemplate::New(ReqQryDepthMarketData)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("reqQrySettlementInfo"),
-		FunctionTemplate::New(ReqQrySettlementInfo)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("disconnect"),
-		FunctionTemplate::New(Disposed)->GetFunction());
-
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("getTradingDay"),
-		FunctionTemplate::New(GetTradingDay)->GetFunction());
-
-	constructor = Persistent<Function>::New(tpl->GetFunction());
+	// constructor = Persistent<Function>::New(tpl->GetFunction());
+	constructor.Reset(isolate, tpl->GetFunction());
 }
 
 void WrapTrader::initEventMap() {
@@ -100,169 +72,194 @@ void WrapTrader::initEventMap() {
 	event_map["rspError"] = T_ON_RSPERROR;
 }
 
-Handle<Value> WrapTrader::New(const Arguments& args) {
-	HandleScope scope;
+Handle<Value> WrapTrader::New(const FunctionCallbackInfo<Value>& args) {
+	Isolate *isolate = args.GetIsolate();
 
-	if (event_map.size() == 0)
-		initEventMap();
-	WrapTrader* obj = new WrapTrader();
-	obj->Wrap(args.This());
-	return args.This();
+  if (event_map.size() == 0)
+      initEventMap();
+
+  if (args.IsConstructCall()) {
+      // Invoked as constructor: `new MyObject(...)`
+      WrapTrader *wTrader = new WrapTrader();
+      wTrader->Wrap(args.This());
+      args.GetReturnValue().Set(args.This());
+  } else {
+      // Invoked as plain function `MyObject(...)`, turn into construct call.
+      const int argc = 1;
+      Local <Value> argv[argc] = {Number::New(isolate, 0)};
+      Local <Function> cons = Local<Function>::New(isolate, constructor);
+      Local <Context> context = isolate->GetCurrentContext();
+      Local <Object> instance = cons->NewInstance(context, argc, argv).ToLocalChecked();
+      args.GetReturnValue().Set(instance);
+  }
 }
 
-Handle<Value> WrapTrader::NewInstance(const Arguments& args) {
-	HandleScope scope;
-
-	const unsigned argc = 1;
-	Handle<Value> argv[argc] = { args[0] };
-	Local<Object> instance = constructor->NewInstance(argc, argv);
-	return scope.Close(instance);
+Handle<Value> WrapTrader::NewInstance(const FunctionCallbackInfo<Value>& args) {
+	Isolate *isolate = args.GetIsolate();
+  const unsigned argc = 1;
+  Local <Value> argv[argc] = {Number::New(isolate, 0)};
+  Local <Function> cons = Local<Function>::New(isolate, constructor);
+  Local <Context> context = isolate->GetCurrentContext();
+  Local <Object> instance = cons->NewInstance(context, argc, argv).ToLocalChecked();
+  args.GetReturnValue().Set(instance);
 }
 
-Handle<Value> WrapTrader::On(const Arguments& args) {
-	HandleScope scope;
-	if (args[0]->IsUndefined() || args[1]->IsUndefined()) {
-		logger_cout("Wrong arguments->event name or function");
-		ThrowException(Exception::TypeError(String::New("Wrong arguments->event name or function")));
-		return scope.Close(Undefined());
-	}
-	
-	WrapTrader* obj = ObjectWrap::Unwrap<WrapTrader>(args.This());
-	
-	Local<String> eventName = args[0]->ToString();
-	Local<Function> cb = Local<Function>::Cast(args[1]);
-	Persistent<Function> unRecoveryCb = Persistent<Function>::New(cb);
-	String::AsciiValue eNameAscii(eventName);
+Handle<Value> WrapTrader::On(const FunctionCallbackInfo<Value>& args) {
+	Isolate *isolate = args.GetIsolate();
 
-	std::map<const char*, int>::iterator eIt = event_map.find(*eNameAscii);
-	if (eIt == event_map.end()) {
-		logger_cout("System has not register this event");
-		ThrowException(Exception::TypeError(String::New("System has no register this event")));
-		return scope.Close(Undefined());
-	}
+  if (args[0]->IsUndefined() || args[1]->IsUndefined()) {
+      logger_cout("Wrong arguments->event name or function");
+      isolate->ThrowException(
+              Exception::TypeError(String::NewFromUtf8(isolate, "Wrong arguments->event name or function")));
+      return;
+  }
 
-	std::map<int, Persistent<Function> >::iterator cIt = callback_map.find(eIt->second);
-	if (cIt != callback_map.end()) {
-		logger_cout("Callback is defined before");
-		ThrowException(Exception::TypeError(String::New("Callback is defined before")));
-		return scope.Close(Undefined());
-	}
+  WrapTrader *obj = ObjectWrap::Unwrap<WrapTrader>(args.Holder());
 
-	callback_map[eIt->second] = unRecoveryCb;	
-	obj->uvTrader->On(*eNameAscii,eIt->second, FunCallback);
-	return scope.Close(Int32::New(0));
+  Local <String> eventName = args[0]->ToString();
+  Local <Function> cb = Local<Function>::Cast(args[1]);
+
+  String::Utf8Value eNameAscii(eventName);
+
+  std::map<std::string, int>::iterator eIt = event_map.find((std::string) * eNameAscii);
+  if (eIt == event_map.end()) {
+      logger_cout("System has not register this event");
+      isolate->ThrowException(
+              Exception::TypeError(String::NewFromUtf8(isolate, "System has no register this event")));
+      return;
+  }
+
+  std::map < int, Persistent < Function > > ::iterator
+  cIt = callback_map.find(eIt->second);
+  if (cIt != callback_map.end()) {
+      logger_cout("Callback is defined before");
+      isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Callback is defined before")));
+      return;
+  }
+
+  callback_map[eIt->second].Reset(isolate, cb);
+  obj->uvTrader->On(*eNameAscii, eIt->second, FunCallback);
+  return args.GetReturnValue().Set(String::NewFromUtf8(isolate, "finish exec on"));
 }
 
-Handle<Value> WrapTrader::Connect(const Arguments& args) {
-	HandleScope scope;	
-	std::string log = "wrap_trader Connect------>";
-	if (args[0]->IsUndefined()) {
-		logger_cout("Wrong arguments->front addr");
-		ThrowException(Exception::TypeError(String::New("Wrong arguments->front addr")));
-		return scope.Close(Undefined());
-	}
-	if (!args[2]->IsNumber() || !args[3]->IsNumber()) {
-		logger_cout("Wrong arguments->public or private topic type");
-		ThrowException(Exception::TypeError(String::New("Wrong arguments->public or private topic type")));
-		return scope.Close(Undefined());
-	}  
-	int uuid = -1;
-	WrapTrader* obj = ObjectWrap::Unwrap<WrapTrader>(args.This());
-	if (!args[4]->IsUndefined() && args[4]->IsFunction()) {
-		uuid = ++s_uuid;
-		fun_rtncb_map[uuid] = Persistent<Function>::New(Local<Function>::Cast(args[4]));
-		std::string _head = std::string(log);
-		logger_cout(_head.append(" uuid is ").append(to_string(uuid)).c_str());
-	}
+Handle<Value> WrapTrader::Connect(const FunctionCallbackInfo<Value>& args) {
+	Isolate *isolate = args.GetIsolate();
 
-	Local<String> frontAddr = args[0]->ToString();
-	Local<String> szPath = args[1]->IsUndefined() ? String::New("t") : args[0]->ToString();
-	String::AsciiValue addrAscii(frontAddr);
-	String::AsciiValue pathAscii(szPath);
-	int publicTopicType = args[2]->Int32Value();
-	int privateTopicType = args[3]->Int32Value();	 
-	
-	UVConnectField pConnectField; 
-	memset(&pConnectField, 0, sizeof(pConnectField));		
-	strcpy(pConnectField.front_addr, ((std::string)*addrAscii).c_str());
-	strcpy(pConnectField.szPath, ((std::string)*pathAscii).c_str());
-	pConnectField.public_topic_type = publicTopicType;
-	pConnectField.private_topic_type = privateTopicType;	
-	logger_cout(log.append(" ").append((std::string)*addrAscii).append("|").append((std::string)*pathAscii).append("|").append(to_string(publicTopicType)).append("|").append(to_string(privateTopicType)).c_str());
-	obj->uvTrader->Connect(&pConnectField, FunRtnCallback, uuid);
-	return scope.Close(Undefined());
+  if (args[0]->IsUndefined()) {
+      logger_cout("Wrong arguments->front addr");
+      isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong arguments->front addr")));
+      return;
+  }
+  if (!args[2]->IsNumber() || !args[3]->IsNumber()) {
+      logger_cout("Wrong arguments->public or private topic type");
+      isolate->ThrowException(
+              Exception::TypeError(String::NewFromUtf8(isolate, "Wrong arguments->public or private topic type")));
+      return;
+  }
+  int uuid = -1;
+  WrapTrader *obj = ObjectWrap::Unwrap<WrapTrader>(args.Holder());
+  if (!args[4]->IsUndefined() && args[4]->IsFunction()) {
+      uuid = ++s_uuid;
+      fun_rtncb_map[uuid].Reset(isolate, Local<Function>::Cast(args[4]));
+      logger_cout(to_string(uuid).append("|uuid").c_str());
+  }
+
+  Local <String> frontAddr = args[0]->ToString();
+  Local <String> szPath = args[1]->IsUndefined() ? String::NewFromUtf8(isolate, "t") : args[0]->ToString();
+  String::Utf8Value addrUtf8(frontAddr);
+  String::Utf8Value pathUtf8(szPath);
+  int publicTopicType = args[2]->Int32Value();
+  int privateTopicType = args[3]->Int32Value();
+
+  UVConnectField pConnectField;
+  memset(&pConnectField, 0, sizeof(pConnectField));
+  strcpy(pConnectField.front_addr, ((std::string) * addrUtf8).c_str());
+  strcpy(pConnectField.szPath, ((std::string) * pathUtf8).c_str());
+  pConnectField.public_topic_type = publicTopicType;
+  pConnectField.private_topic_type = privateTopicType;
+  logger_cout(((std::string) * addrUtf8).append("|addrUtf8").c_str());
+  logger_cout(((std::string) * pathUtf8).append("|pathUtf8").c_str());
+  logger_cout(to_string(publicTopicType).append("|publicTopicType").c_str());
+  logger_cout(to_string(privateTopicType).append("|privateTopicType").c_str());
+
+  obj->uvTrader->Connect(&pConnectField, FunRtnCallback, uuid);
+  return args.GetReturnValue().Set(String::NewFromUtf8(isolate, "finish exec connect"));
 }
 
-Handle<Value> WrapTrader::ReqUserLogin(const Arguments& args) {
-	HandleScope scope;
-	std::string log = "wrap_trader ReqUserLogin------>";
-	if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined()) {
-		std::string _head = std::string(log);
-		logger_cout(_head.append(" Wrong arguments").c_str());
-		ThrowException(Exception::TypeError(String::New("Wrong arguments")));
-		return scope.Close(Undefined());
-	}
+Handle<Value> WrapTrader::ReqUserLogin(const FunctionCallbackInfo<Value>& args) {
+	Isolate *isolate = args.GetIsolate();
 
-	int uuid = -1;
-	WrapTrader* obj = ObjectWrap::Unwrap<WrapTrader>(args.This());
-	if (!args[3]->IsUndefined() && args[3]->IsFunction()) {
-		uuid = ++s_uuid;
-		fun_rtncb_map[uuid] = Persistent<Function>::New(Local<Function>::Cast(args[3]));
-		std::string _head = std::string(log);
-		logger_cout(_head.append(" uuid is ").append(to_string(uuid)).c_str());
-	}
+  std::string log = "wrap_trader ReqUserLogin------>";
+  if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined()) {
+      std::string _head = std::string(log);
+      logger_cout(_head.append(" Wrong arguments").c_str());
+      isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong arguments")));
+      return;
+  }
 
-	Local<String> broker = args[0]->ToString();
-	Local<String> userId = args[1]->ToString();
-	Local<String> pwd = args[2]->ToString();
-	String::AsciiValue brokerAscii(broker);
-	String::AsciiValue userIdAscii(userId);
-	String::AsciiValue pwdAscii(pwd);
+  int uuid = -1;
+  WrapTrader *obj = ObjectWrap::Unwrap<WrapTrader>(args.Holder());
+  if (!args[3]->IsUndefined() && args[3]->IsFunction()) {
+      uuid = ++s_uuid;
+      fun_rtncb_map[uuid].Reset(isolate, Local<Function>::Cast(args[3]));
+      std::string _head = std::string(log);
+      logger_cout(_head.append(" uuid is ").append(to_string(uuid)).c_str());
+  }
 
-	CThostFtdcReqUserLoginField req;
-	memset(&req, 0, sizeof(req));
-	strcpy(req.BrokerID, ((std::string)*brokerAscii).c_str());
-	strcpy(req.UserID, ((std::string)*userIdAscii).c_str());
-	strcpy(req.Password, ((std::string)*pwdAscii).c_str());	
-	logger_cout(log.append(" ").append((std::string)*brokerAscii).append("|").append((std::string)*userIdAscii).append("|").append((std::string)*pwdAscii).c_str());
-	obj->uvTrader->ReqUserLogin(&req, FunRtnCallback, uuid);
-	return scope.Close(Undefined());
+  Local <String> broker = args[0]->ToString();
+  Local <String> userId = args[1]->ToString();
+  Local <String> pwd = args[2]->ToString();
+  String::Utf8Value brokerUtf8(broker);
+  String::Utf8Value userIdUtf8(userId);
+  String::Utf8Value pwdUtf8(pwd);
+
+  CThostFtdcReqUserLoginField req;
+  memset(&req, 0, sizeof(req));
+  strcpy(req.BrokerID, ((std::string) * brokerUtf8).c_str());
+  strcpy(req.UserID, ((std::string) * userIdUtf8).c_str());
+  strcpy(req.Password, ((std::string) * pwdUtf8).c_str());
+  logger_cout(
+          log.append(" ").append((std::string) * brokerUtf8).append("|").append((std::string) * userIdUtf8).append(
+                  "|").append((std::string) * pwdUtf8).c_str());
+  obj->uvTrader->ReqUserLogin(&req, FunRtnCallback, uuid);
+  return args.GetReturnValue().Set(String::NewFromUtf8(isolate, "finish exec reqUserlogin"));
 }
 
-Handle<Value> WrapTrader::ReqUserLogout(const Arguments& args) {
-	HandleScope scope;
-	std::string log = "wrap_trader ReqUserLogout------>";
+Handle<Value> WrapTrader::ReqUserLogout(const FunctionCallbackInfo<Value>& args) {
+	Isolate *isolate = args.GetIsolate();
+  std::string log = "wrap_trader ReqUserLogout------>";
 
-	if (args[0]->IsUndefined() || args[1]->IsUndefined()) {
-		std::string _head = std::string(log);
-		logger_cout(_head.append(" Wrong arguments").c_str());
-		ThrowException(Exception::TypeError(String::New("Wrong arguments")));
-		return scope.Close(Undefined());
-	}
-	int uuid = -1;
-	WrapTrader* obj = ObjectWrap::Unwrap<WrapTrader>(args.This());
-	if (!args[2]->IsUndefined() && args[2]->IsFunction()) {
-		uuid = ++s_uuid;
-		fun_rtncb_map[uuid] = Persistent<Function>::New(Local<Function>::Cast(args[2]));
-		std::string _head = std::string(log);
-		logger_cout(_head.append(" uuid is ").append(to_string(uuid)).c_str());
-	}
+  if (args[0]->IsUndefined() || args[1]->IsUndefined()) {
+      std::string _head = std::string(log);
+      logger_cout(_head.append(" Wrong arguments").c_str());
+      isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong arguments")));
+      return ;
+  }
+  int uuid = -1;
+  WrapTrader *obj = ObjectWrap::Unwrap<WrapTrader>(args.Holder());
+  if (!args[2]->IsUndefined() && args[2]->IsFunction()) {
+      uuid = ++s_uuid;
+      fun_rtncb_map[uuid].Reset(isolate, Local<Function>::Cast(args[2]));
+      std::string _head = std::string(log);
+      logger_cout(_head.append(" uuid is ").append(to_string(uuid)).c_str());
+  }
 
-	Local<String> broker = args[0]->ToString();
-	Local<String> userId = args[1]->ToString();
-	String::AsciiValue brokerAscii(broker);
-	String::AsciiValue userIdAscii(userId);
+  Local <String> broker = args[0]->ToString();
+  Local <String> userId = args[1]->ToString();
+  String::Utf8Value brokerAscii(broker);
+  String::Utf8Value userIdAscii(userId);
 
-	CThostFtdcUserLogoutField req;
-	memset(&req, 0, sizeof(req));
-	strcpy(req.BrokerID, ((std::string)*brokerAscii).c_str());
-	strcpy(req.UserID, ((std::string)*userIdAscii).c_str());
-	logger_cout(log.append(" ").append((std::string)*brokerAscii).append("|").append((std::string)*userIdAscii).c_str());
-	obj->uvTrader->ReqUserLogout(&req, FunRtnCallback, uuid);
-	return scope.Close(Undefined());
+  CThostFtdcUserLogoutField req;
+  memset(&req, 0, sizeof(req));
+  strcpy(req.BrokerID, ((std::string) * brokerAscii).c_str());
+  strcpy(req.UserID, ((std::string) * userIdAscii).c_str());
+  logger_cout(log.append(" ").append((std::string) * brokerAscii).append("|").append(
+          (std::string) * userIdAscii).c_str());
+  obj->uvTrader->ReqUserLogout(&req, FunRtnCallback, uuid);
+  return ;
 }
 
-Handle<Value> WrapTrader::ReqSettlementInfoConfirm(const Arguments& args) {
+Handle<Value> WrapTrader::ReqSettlementInfoConfirm(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_trader ReqSettlementInfoConfirm------>";
 
@@ -295,7 +292,7 @@ Handle<Value> WrapTrader::ReqSettlementInfoConfirm(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapTrader::ReqQryInstrument(const Arguments& args) {
+Handle<Value> WrapTrader::ReqQryInstrument(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_trader ReqQryInstrument------>";
 
@@ -325,7 +322,7 @@ Handle<Value> WrapTrader::ReqQryInstrument(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapTrader::ReqQryTradingAccount(const Arguments& args) {
+Handle<Value> WrapTrader::ReqQryTradingAccount(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_trader ReqQryTradingAccount------>";
 
@@ -357,7 +354,7 @@ Handle<Value> WrapTrader::ReqQryTradingAccount(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapTrader::ReqQryInvestorPosition(const Arguments& args) {
+Handle<Value> WrapTrader::ReqQryInvestorPosition(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_trader ReqQryInvestorPosition------>";
 
@@ -393,7 +390,7 @@ Handle<Value> WrapTrader::ReqQryInvestorPosition(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapTrader::ReqQryInvestorPositionDetail(const Arguments& args) {
+Handle<Value> WrapTrader::ReqQryInvestorPositionDetail(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_trader ReqQryInvestorPositionDetail------>";
 
@@ -429,7 +426,7 @@ Handle<Value> WrapTrader::ReqQryInvestorPositionDetail(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapTrader::ReqOrderInsert(const Arguments& args) {
+Handle<Value> WrapTrader::ReqOrderInsert(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_trader ReqOrderInsert------>";
 
@@ -598,7 +595,7 @@ Handle<Value> WrapTrader::ReqOrderInsert(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapTrader::ReqOrderAction(const Arguments& args) {
+Handle<Value> WrapTrader::ReqOrderAction(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_trader ReqOrderAction------>";
 
@@ -693,7 +690,7 @@ Handle<Value> WrapTrader::ReqOrderAction(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapTrader::ReqQryInstrumentMarginRate(const Arguments& args) {
+Handle<Value> WrapTrader::ReqQryInstrumentMarginRate(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_trader ReqQryInstrumentMarginRate------>";
 
@@ -737,7 +734,7 @@ Handle<Value> WrapTrader::ReqQryInstrumentMarginRate(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapTrader::ReqQryDepthMarketData(const Arguments& args) {
+Handle<Value> WrapTrader::ReqQryDepthMarketData(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_trader ReqQryDepthMarketData------>";
 
@@ -768,7 +765,7 @@ Handle<Value> WrapTrader::ReqQryDepthMarketData(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapTrader::ReqQrySettlementInfo(const Arguments& args) {
+Handle<Value> WrapTrader::ReqQrySettlementInfo(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_trader ReqQrySettlementInfo------>";
 
@@ -808,7 +805,7 @@ Handle<Value> WrapTrader::ReqQrySettlementInfo(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapTrader::Disposed(const Arguments& args) {
+Handle<Value> WrapTrader::Disposed(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	WrapTrader* obj = ObjectWrap::Unwrap<WrapTrader>(args.This());
 	obj->uvTrader->Disconnect();	
@@ -826,7 +823,7 @@ Handle<Value> WrapTrader::Disposed(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapTrader::GetTradingDay(const Arguments& args){
+Handle<Value> WrapTrader::GetTradingDay(const FunctionCallbackInfo<Value>& args){
     HandleScope scope;
 	WrapTrader* obj = ObjectWrap::Unwrap<WrapTrader>(args.This());
 	const char* tradingDay = obj->uvTrader->GetTradingDay();
@@ -1621,64 +1618,68 @@ void WrapTrader::pkg_cb_rqinstrument(CbRtnField* data, Local<Value>*cbArray) {
 	*(cbArray + 3) = pkg_rspinfo(data->rspInfo);
 	return;
 }
-void WrapTrader::pkg_cb_rqdepthmarketdata(CbRtnField* data, Local<Value>*cbArray) {
-	*cbArray = Int32::New(data->nRequestID);
-	*(cbArray + 1) = Boolean::New(data->bIsLast)->ToBoolean();
-    if (data->rtnField){ 
-	    CThostFtdcDepthMarketDataField *pDepthMarketData = static_cast<CThostFtdcDepthMarketDataField*>(data->rtnField);
-		Local<Object> jsonRtn = Object::New();
-		jsonRtn->Set(String::NewSymbol("TradingDay"), String::New(pDepthMarketData->TradingDay));
-		jsonRtn->Set(String::NewSymbol("InstrumentID"), String::New(pDepthMarketData->InstrumentID));
-		jsonRtn->Set(String::NewSymbol("ExchangeID"), String::New(pDepthMarketData->ExchangeID));
-		jsonRtn->Set(String::NewSymbol("ExchangeInstID"), String::New(pDepthMarketData->ExchangeInstID));
-		jsonRtn->Set(String::NewSymbol("LastPrice"), Number::New(pDepthMarketData->LastPrice));
-		jsonRtn->Set(String::NewSymbol("PreSettlementPrice"), Number::New(pDepthMarketData->PreSettlementPrice));
-		jsonRtn->Set(String::NewSymbol("PreClosePrice"), Number::New(pDepthMarketData->PreClosePrice));
-		jsonRtn->Set(String::NewSymbol("PreOpenInterest"), Number::New(pDepthMarketData->PreOpenInterest));
-		jsonRtn->Set(String::NewSymbol("OpenPrice"), Number::New(pDepthMarketData->OpenPrice));
-		jsonRtn->Set(String::NewSymbol("HighestPrice"), Number::New(pDepthMarketData->HighestPrice));
-		jsonRtn->Set(String::NewSymbol("LowestPrice"), Number::New(pDepthMarketData->LowestPrice));
-		jsonRtn->Set(String::NewSymbol("Volume"), Int32::New(pDepthMarketData->Volume));
-		jsonRtn->Set(String::NewSymbol("Turnover"), Number::New(pDepthMarketData->Turnover));
-		jsonRtn->Set(String::NewSymbol("OpenInterest"), Number::New(pDepthMarketData->OpenInterest));
-		jsonRtn->Set(String::NewSymbol("ClosePrice"), Number::New(pDepthMarketData->ClosePrice));
-		jsonRtn->Set(String::NewSymbol("SettlementPrice"), Number::New(pDepthMarketData->SettlementPrice));
-		jsonRtn->Set(String::NewSymbol("UpperLimitPrice"), Number::New(pDepthMarketData->UpperLimitPrice));
-		jsonRtn->Set(String::NewSymbol("LowerLimitPrice"), Number::New(pDepthMarketData->LowerLimitPrice));
-		jsonRtn->Set(String::NewSymbol("PreDelta"), Number::New(pDepthMarketData->PreDelta));
-		jsonRtn->Set(String::NewSymbol("CurrDelta"), Number::New(pDepthMarketData->CurrDelta));
-		jsonRtn->Set(String::NewSymbol("UpdateTime"), String::New(pDepthMarketData->UpdateTime));
-		jsonRtn->Set(String::NewSymbol("UpdateMillisec"), Int32::New(pDepthMarketData->UpdateMillisec));
-		jsonRtn->Set(String::NewSymbol("BidPrice1"), Number::New(pDepthMarketData->BidPrice1));
-		jsonRtn->Set(String::NewSymbol("BidVolume1"), Number::New(pDepthMarketData->BidVolume1));
-		jsonRtn->Set(String::NewSymbol("AskPrice1"), Number::New(pDepthMarketData->AskPrice1));
-		jsonRtn->Set(String::NewSymbol("AskVolume1"), Number::New(pDepthMarketData->AskVolume1));
-		jsonRtn->Set(String::NewSymbol("BidPrice2"), Number::New(pDepthMarketData->BidPrice2));
-		jsonRtn->Set(String::NewSymbol("BidVolume2"), Number::New(pDepthMarketData->BidVolume2));
-		jsonRtn->Set(String::NewSymbol("AskPrice2"), Number::New(pDepthMarketData->AskPrice2));
-		jsonRtn->Set(String::NewSymbol("AskVolume2"), Number::New(pDepthMarketData->AskVolume2));
-		jsonRtn->Set(String::NewSymbol("BidPrice3"), Number::New(pDepthMarketData->BidPrice3));
-		jsonRtn->Set(String::NewSymbol("BidVolume3"), Number::New(pDepthMarketData->BidVolume3));
-		jsonRtn->Set(String::NewSymbol("AskPrice3"), Number::New(pDepthMarketData->AskPrice3));
-		jsonRtn->Set(String::NewSymbol("AskVolume3"), Number::New(pDepthMarketData->AskVolume3));
-		jsonRtn->Set(String::NewSymbol("BidPrice4"), Number::New(pDepthMarketData->BidPrice4));
-		jsonRtn->Set(String::NewSymbol("BidVolume4"), Number::New(pDepthMarketData->BidVolume4));
-		jsonRtn->Set(String::NewSymbol("AskPrice4"), Number::New(pDepthMarketData->AskPrice4));
-		jsonRtn->Set(String::NewSymbol("AskVolume4"), Number::New(pDepthMarketData->AskVolume4));
-		jsonRtn->Set(String::NewSymbol("BidPrice5"), Number::New(pDepthMarketData->BidPrice5));
-		jsonRtn->Set(String::NewSymbol("BidVolume5"), Number::New(pDepthMarketData->BidVolume5));
-		jsonRtn->Set(String::NewSymbol("AskPrice5"), Number::New(pDepthMarketData->AskPrice5));
-		jsonRtn->Set(String::NewSymbol("AskVolume5"), Number::New(pDepthMarketData->AskVolume5));
-		jsonRtn->Set(String::NewSymbol("AveragePrice"), Number::New(pDepthMarketData->AveragePrice));
-		jsonRtn->Set(String::NewSymbol("ActionDay"), String::New(pDepthMarketData->ActionDay));
-		*(cbArray + 2) = jsonRtn;
-	}
-	else {
-		*(cbArray + 2) = Local<Value>::New(Undefined());
-	}
-	*(cbArray + 3) = pkg_rspinfo(data->rspInfo);
-	return;
+
+void WrapTrader::pkg_cb_rqdepthmarketdata(CbRtnField *data, Local <Value> *cbArray) {
+    Isolate *isolate = Isolate::GetCurrent();
+
+    *cbArray = Number::New(isolate, data->nRequestID);
+    *(cbArray + 1) = Boolean::New(isolate, data->bIsLast);
+    if (data->rtnField) {
+        CThostFtdcDepthMarketDataField *pDepthMarketData = static_cast<CThostFtdcDepthMarketDataField *>(data->rtnField);
+        Local <Object> jsonRtn = Object::New(isolate);
+        jsonRtn->Set(String::NewFromUtf8(isolate, "TradingDay"), String::NewFromUtf8(isolate, pDepthMarketData->TradingDay));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "InstrumentID"), String::NewFromUtf8(isolate, pDepthMarketData->InstrumentID));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "ExchangeID"), String::NewFromUtf8(isolate, pDepthMarketData->ExchangeID));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "ExchangeInstID"), String::NewFromUtf8(isolate, pDepthMarketData->ExchangeInstID));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "LastPrice"), Number::New(isolate, pDepthMarketData->LastPrice));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "PreSettlementPrice"), Number::New(isolate, pDepthMarketData->PreSettlementPrice));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "PreClosePrice"), Number::New(isolate, pDepthMarketData->PreClosePrice));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "PreOpenInterest"), Number::New(isolate, pDepthMarketData->PreOpenInterest));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "OpenPrice"), Number::New(isolate, pDepthMarketData->OpenPrice));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "HighestPrice"), Number::New(isolate, pDepthMarketData->HighestPrice));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "LowestPrice"), Number::New(isolate, pDepthMarketData->LowestPrice));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "Volume"), Number::New(isolate, pDepthMarketData->Volume));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "Turnover"), Number::New(isolate, pDepthMarketData->Turnover));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "OpenInterest"), Number::New(isolate, pDepthMarketData->OpenInterest));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "ClosePrice"), Number::New(isolate, pDepthMarketData->ClosePrice));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "SettlementPrice"), Number::New(isolate, pDepthMarketData->SettlementPrice));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "UpperLimitPrice"), Number::New(isolate, pDepthMarketData->UpperLimitPrice));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "LowerLimitPrice"), Number::New(isolate, pDepthMarketData->LowerLimitPrice));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "PreDelta"), Number::New(isolate, pDepthMarketData->PreDelta));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "CurrDelta"), Number::New(isolate, pDepthMarketData->CurrDelta));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "UpdateTime"), String::NewFromUtf8(isolate, pDepthMarketData->UpdateTime));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "UpdateMillisec"), Number::New(isolate, pDepthMarketData->UpdateMillisec));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "BidPrice1"), Number::New(isolate, pDepthMarketData->BidPrice1));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "BidVolume1"), Number::New(isolate, pDepthMarketData->BidVolume1));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "AskPrice1"), Number::New(isolate, pDepthMarketData->AskPrice1));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "AskVolume1"), Number::New(isolate, pDepthMarketData->AskVolume1));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "BidPrice2"), Number::New(isolate, pDepthMarketData->BidPrice2));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "BidVolume2"), Number::New(isolate, pDepthMarketData->BidVolume2));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "AskPrice2"), Number::New(isolate, pDepthMarketData->AskPrice2));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "AskVolume2"), Number::New(isolate, pDepthMarketData->AskVolume2));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "BidPrice3"), Number::New(isolate, pDepthMarketData->BidPrice3));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "BidVolume3"), Number::New(isolate, pDepthMarketData->BidVolume3));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "AskPrice3"), Number::New(isolate, pDepthMarketData->AskPrice3));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "AskVolume3"), Number::New(isolate, pDepthMarketData->AskVolume3));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "BidPrice4"), Number::New(isolate, pDepthMarketData->BidPrice4));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "BidVolume4"), Number::New(isolate, pDepthMarketData->BidVolume4));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "AskPrice4"), Number::New(isolate, pDepthMarketData->AskPrice4));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "AskVolume4"), Number::New(isolate, pDepthMarketData->AskVolume4));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "BidPrice5"), Number::New(isolate, pDepthMarketData->BidPrice5));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "BidVolume5"), Number::New(isolate, pDepthMarketData->BidVolume5));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "AskPrice5"), Number::New(isolate, pDepthMarketData->AskPrice5));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "AskVolume5"), Number::New(isolate, pDepthMarketData->AskVolume5));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "AveragePrice"), Number::New(isolate, pDepthMarketData->AveragePrice));
+        jsonRtn->Set(String::NewFromUtf8(isolate, "ActionDay"), String::NewFromUtf8(isolate, pDepthMarketData->ActionDay));
+        *(cbArray + 2) = jsonRtn;
+    }
+    else {
+        *(cbArray + 2) = Local<Value>::New(isolate, Undefined(isolate));
+    }
+    *(cbArray + 3) = pkg_rspinfo(data->rspInfo);
+    return;
 }
+
 void WrapTrader::pkg_cb_rqsettlementinfo(CbRtnField* data, Local<Value>*cbArray) {
 	*cbArray = Int32::New(data->nRequestID);
 	*(cbArray + 1) = Boolean::New(data->bIsLast)->ToBoolean();
@@ -1700,20 +1701,24 @@ void WrapTrader::pkg_cb_rqsettlementinfo(CbRtnField* data, Local<Value>*cbArray)
 	return;
 }
 void WrapTrader::pkg_cb_rsperror(CbRtnField* data, Local<Value>*cbArray) {
-	*cbArray = Int32::New(data->nRequestID);
-	*(cbArray + 1) = Boolean::New(data->bIsLast)->ToBoolean();
+	Isolate *isolate = Isolate::GetCurrent();
+
+	*cbArray = Number::New(isolate, data->nRequestID);
+	*(cbArray + 1) = Boolean::New(isolate, data->bIsLast);
 	*(cbArray + 2) = pkg_rspinfo(data->rspInfo);
 	return;
 }
 Local<Value> WrapTrader::pkg_rspinfo(void *vpRspInfo) {
-	if (vpRspInfo) {
-        CThostFtdcRspInfoField *pRspInfo = static_cast<CThostFtdcRspInfoField*>(vpRspInfo);
-		Local<Object> jsonInfo = Object::New();
-		jsonInfo->Set(String::NewSymbol("ErrorID"), Int32::New(pRspInfo->ErrorID));
-		jsonInfo->Set(String::NewSymbol("ErrorMsg"), String::New(pRspInfo->ErrorMsg));
-		return jsonInfo;
-	}
-	else {
-		return 	Local<Value>::New(Undefined());
-	}
+	Isolate *isolate = Isolate::GetCurrent();
+
+  if (vpRspInfo) {
+      CThostFtdcRspInfoField *pRspInfo = static_cast<CThostFtdcRspInfoField *>(vpRspInfo);
+      Local <Object> jsonInfo = Object::New(isolate);
+      jsonInfo->Set(String::NewFromUtf8(isolate, "ErrorID"), Number::New(isolate, pRspInfo->ErrorID));
+      jsonInfo->Set(String::NewFromUtf8(isolate, "ErrorMsg"), String::NewFromUtf8(isolate, pRspInfo->ErrorMsg));
+      return jsonInfo;
+  }
+  else {
+      return Local<Value>::New(isolate, Undefined(isolate));
+  }
 }

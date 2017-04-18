@@ -1,4 +1,4 @@
-#ifndef N_MDUSER_H_
+﻿#ifndef N_MDUSER_H_
 #define N_MDUSER_H_
 
 #include "stdafx.h"
@@ -8,6 +8,7 @@
 #include <map>
 #include <fstream>
 #include <node.h>
+#include <node_object_wrap.h>
 #include "ThostFtdcTraderApi.h"
 #include "ThostFtdcUserApiDataType.h"
 #include <uv.h>
@@ -24,19 +25,19 @@ public:
 	WrapMdUser(void);
 	~WrapMdUser(void);
 
-	static Handle<Value> Connect(const Arguments& args);
-	static Handle<Value> On(const Arguments& args);
-	static Handle<Value> ReqUserLogin(const Arguments& args);
-	static Handle<Value> ReqUserLogout(const Arguments& args);
-	static Handle<Value>  SubscribeMarketData(const Arguments& args);
-	static Handle<Value>  UnSubscribeMarketData(const Arguments& args);
-	static Handle<Value> Disposed(const Arguments& args);
+	static Handle<Value> Connect(const FunctionCallbackInfo<Value>& args);
+	static Handle<Value> On(const FunctionCallbackInfo<Value>& args);
+	static Handle<Value> ReqUserLogin(const FunctionCallbackInfo<Value>& args);
+	static Handle<Value> ReqUserLogout(const FunctionCallbackInfo<Value>& args);
+	static Handle<Value>  SubscribeMarketData(const FunctionCallbackInfo<Value>& args);
+	static Handle<Value>  UnSubscribeMarketData(const FunctionCallbackInfo<Value>& args);
+	static Handle<Value> Disposed(const FunctionCallbackInfo<Value>& args);
 	static void Init(int args);
-	static Handle<Value> NewInstance(const Arguments& args);
+	static Handle<Value> NewInstance(const FunctionCallbackInfo<Value>& args);
 
 private:
 	static void initEventMap();
-	static Handle<Value> New(const Arguments& args);
+	static Handle<Value> New(const FunctionCallbackInfo<Value>& args);
 	static void pkg_cb_userlogin(CbRtnField* data, Local<Value>*cbArray);
 	static void pkg_cb_userlogout(CbRtnField* data, Local<Value>*cbArray);
 	static void pkg_cb_rspsubmarketdata(CbRtnField* data, Local<Value>*cbArray);

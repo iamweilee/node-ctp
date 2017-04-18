@@ -1,4 +1,4 @@
-#ifndef _UV_MDUSER_
+ï»¿#ifndef _UV_MDUSER_
 #define _UV_MDUSER_
 
 #include "stdafx.h"
@@ -20,9 +20,9 @@ public:
 	uv_mduser(void);
 	~uv_mduser(void);
 
-	///×¢²áÊÂ¼ş
+	///æ³¨å†Œäº‹ä»¶
 	int On(const char* eName, int cb_type, void(*callback)(CbRtnField* cbResult));
-	///Á¬½ÓÇ°ÖÃ»ú
+	///è¿æ¥å‰ç½®æœº
 	void  Connect(UVConnectField* pConnectField, void(*callback)(int, void*), int uuid);
 	void  ReqUserLogin(CThostFtdcReqUserLoginField *pReqUserLoginField, void(*callback)(int, void*), int uuid);
 	void  ReqUserLogout(CThostFtdcUserLogoutField *pUserLogout, void(*callback)(int, void*), int uuid);
@@ -31,39 +31,39 @@ public:
 	void  Disposed(); 	
 
 private:
-	///Òì²½µ÷ÓÃ queue
+	///å¼‚æ­¥è°ƒç”¨ queue
 	static void _async(uv_work_t * work);
-	///Òì²½µ÷ÓÃÍê³É queue
+	///å¼‚æ­¥è°ƒç”¨å®Œæˆ queue
 	static void _completed(uv_work_t * work, int);
 
     static void _on_async(uv_work_t * work);
 
     static void _on_completed(uv_work_t * work,int);
-	///µ÷ÓÃctp api
+	///è°ƒç”¨ctp api
 	void invoke(void* field, int count, int ret, void(*callback)(int, void*), int uuid);
 
 	void on_invoke(int event_type, void* _stru, CThostFtdcRspInfoField *pRspInfo_org, int nRequestID, bool bIsLast);
-	///µ±¿Í»§¶ËÓë½»Ò×ºóÌ¨½¨Á¢ÆğÍ¨ĞÅÁ¬½ÓÊ±£¨»¹Î´µÇÂ¼Ç°£©£¬¸Ã·½·¨±»µ÷ÓÃ
+	///å½“å®¢æˆ·ç«¯ä¸äº¤æ˜“åå°å»ºç«‹èµ·é€šä¿¡è¿æ¥æ—¶ï¼ˆè¿˜æœªç™»å½•å‰ï¼‰ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨
 	virtual void OnFrontConnected();
-	///Á¬½Ó¶Ï¿ªÊ±£¬¸Ã·½·¨±»µ÷ÓÃ
-	///@param nReason ´íÎóÔ­Òò
-	///        0x1001 ÍøÂç¶ÁÊ§°Ü
-	///        0x1002 ÍøÂçĞ´Ê§°Ü
-	///        0x2001 ½ÓÊÕĞÄÌø³¬Ê±
-	///        0x2002 ·¢ËÍĞÄÌøÊ§°Ü
-	///        0x2003 ÊÕµ½´íÎó±¨ÎÄ
+	///è¿æ¥æ–­å¼€æ—¶ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨
+	///@param nReason é”™è¯¯åŸå› 
+	///        0x1001 ç½‘ç»œè¯»å¤±è´¥
+	///        0x1002 ç½‘ç»œå†™å¤±è´¥
+	///        0x2001 æ¥æ”¶å¿ƒè·³è¶…æ—¶
+	///        0x2002 å‘é€å¿ƒè·³å¤±è´¥
+	///        0x2003 æ”¶åˆ°é”™è¯¯æŠ¥æ–‡
 	virtual void OnFrontDisconnected(int nReason);
-	///µÇÂ¼ÇëÇóÏìÓ¦ 
+	///ç™»å½•è¯·æ±‚å“åº” 
 	virtual void OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-	///µÇ³öÇëÇóÏìÓ¦ 
+	///ç™»å‡ºè¯·æ±‚å“åº” 
 	virtual void OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-	///´íÎóÓ¦´ğ 
+	///é”™è¯¯åº”ç­” 
 	virtual void OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-	///¶©ÔÄĞĞÇéÓ¦´ğ 
+	///è®¢é˜…è¡Œæƒ…åº”ç­” 
 	virtual void OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-	///È¡Ïû¶©ÔÄĞĞÇéÓ¦´ğ 
+	///å–æ¶ˆè®¢é˜…è¡Œæƒ…åº”ç­” 
 	virtual void OnRspUnSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-	///Éî¶ÈĞĞÇéÍ¨Öª 
+	///æ·±åº¦è¡Œæƒ…é€šçŸ¥ 
 	virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData);
 
 	CThostFtdcMdApi* m_pApi;

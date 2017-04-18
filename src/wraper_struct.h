@@ -1,10 +1,10 @@
-#ifndef _WRAPER_STRUCT_
+ï»¿#ifndef _WRAPER_STRUCT_
 #define _WRAPER_STRUCT_
 
 #include <node.h>
 
 #define MSG_MAX_COUNT 200
-///////////////////////////////ÄÚ²¿Ê¹ÓÃ
+///////////////////////////////å†…éƒ¨ä½¿ç”¨
 #define T_CONNECT_RE 1
 #define T_LOGIN_RE 2
 #define T_LOGOUT_RE 3
@@ -21,7 +21,7 @@
 #define T_SUBSCRIBE_MARKET_DATA_RE 14
 #define T_UNSUBSCRIBE_MARKET_DATA_RE 15
 #define T_DISCONNECT_RE	16
-///////////////////////////////Íâ²¿Ê¹ÓÃ
+///////////////////////////////å¤–éƒ¨ä½¿ç”¨
 #define T_ON_CONNECT 1
 #define T_ON_DISCONNECTED 2
 #define T_ON_RSPUSERLOGIN 3
@@ -61,13 +61,13 @@ struct LookupCtpApiBaton {
 	int fun;
 	int iRequestID;
 	int nResult;
-	int uuid;//»Øµ÷±êÊ¶
+	int uuid;//å›žè°ƒæ ‡è¯†
 	int nCount;
 };
 
 struct CbRtnField {
     uv_work_t work;
-	int eFlag;//ÊÂ¼þ±êÊ¶
+	int eFlag;//äº‹ä»¶æ ‡è¯†
 	int nRequestID;
 	int nReason;
 	void* rtnField;

@@ -1,11 +1,12 @@
 {
-  "name": "shifctp",
+  "name": "node-ctp",
   "version": "0.0.0",
   "description": "Futures CTP API wraped by node.js",
   "main": "main.js",
   "private": true,
   "gypfile": true,
   "dependencies": {
-    "bindings": "~1.2.1"
+    "bindings": "*",
+    "nan": "^2.6.2"
   }
 }

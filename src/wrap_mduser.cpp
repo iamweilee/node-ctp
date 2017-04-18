@@ -1,4 +1,4 @@
-#include <node.h>
+﻿#include <node.h>
 #include "wrap_mduser.h"
 
 Persistent<Function> WrapMdUser::constructor;
@@ -61,7 +61,7 @@ void WrapMdUser::initEventMap() {
 	event_map["rspError"] = T_ON_RSPERROR;
 }
 
-Handle<Value> WrapMdUser::New(const Arguments& args) {
+Handle<Value> WrapMdUser::New(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 
 	if (event_map.size() == 0)
@@ -71,7 +71,7 @@ Handle<Value> WrapMdUser::New(const Arguments& args) {
 	return args.This();
 }
 
-Handle<Value> WrapMdUser::NewInstance(const Arguments& args) {
+Handle<Value> WrapMdUser::NewInstance(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 
 	const unsigned argc = 1;
@@ -80,7 +80,7 @@ Handle<Value> WrapMdUser::NewInstance(const Arguments& args) {
 	return scope.Close(instance);
 }
 
-Handle<Value> WrapMdUser::On(const Arguments& args) {
+Handle<Value> WrapMdUser::On(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	if (args[0]->IsUndefined() || args[1]->IsUndefined()) {
 		logger_cout("Wrong arguments->event name or function");
@@ -112,7 +112,7 @@ Handle<Value> WrapMdUser::On(const Arguments& args) {
 	return scope.Close(Int32::New(0));
 }
 
-Handle<Value> WrapMdUser::Connect(const Arguments& args) {
+Handle<Value> WrapMdUser::Connect(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_mduser Connect------>";
 	if (args[0]->IsUndefined()) {
@@ -143,7 +143,7 @@ Handle<Value> WrapMdUser::Connect(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapMdUser::ReqUserLogin(const Arguments& args) {
+Handle<Value> WrapMdUser::ReqUserLogin(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_mduser ReqUserLogin------>";
 	if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined()) {
@@ -179,7 +179,7 @@ Handle<Value> WrapMdUser::ReqUserLogin(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapMdUser::ReqUserLogout(const Arguments& args) {
+Handle<Value> WrapMdUser::ReqUserLogout(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_mduser ReqUserLogout------>";
 
@@ -212,7 +212,7 @@ Handle<Value> WrapMdUser::ReqUserLogout(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapMdUser::SubscribeMarketData(const Arguments& args) {
+Handle<Value> WrapMdUser::SubscribeMarketData(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_mduser SubscribeMarketData------>";
 
@@ -247,7 +247,7 @@ Handle<Value> WrapMdUser::SubscribeMarketData(const Arguments& args) {
 	return scope.Close(Undefined());
 }
 
-Handle<Value> WrapMdUser::UnSubscribeMarketData(const Arguments& args) {
+Handle<Value> WrapMdUser::UnSubscribeMarketData(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	std::string log = "wrap_mduser UnSubscribeMarketData------>";
 
@@ -281,7 +281,7 @@ Handle<Value> WrapMdUser::UnSubscribeMarketData(const Arguments& args) {
 	return scope.Close(Undefined());	 
 }
 
-Handle<Value> WrapMdUser::Disposed(const Arguments& args) {
+Handle<Value> WrapMdUser::Disposed(const FunctionCallbackInfo<Value>& args) {
 	HandleScope scope;
 	WrapMdUser* obj = ObjectWrap::Unwrap<WrapMdUser>(args.This());
 	obj->uvMdUser->Disposed();

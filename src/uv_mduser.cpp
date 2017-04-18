@@ -1,4 +1,4 @@
-#include <uv.h>
+Ôªø#include <uv.h>
 #include "uv_mduser.h"
 #include "ThostFtdcMdApi.h"
 #include "ThostFtdcUserApiDataType.h"
@@ -8,7 +8,7 @@ std::map<int, CbWrap*> uv_mduser::cb_map;
 uv_mduser::uv_mduser(void) {
 	iRequestID = 0;
 	m_pApi = NULL;
-    uv_async_init(uv_default_loop(),&async_t,NULL);//øøNodeøø
+    uv_async_init(uv_default_loop(),&async_t,NULL);//Èù†NodeÈù†
 }
 
 uv_mduser::~uv_mduser(void) {
@@ -36,7 +36,7 @@ int uv_mduser::On(const char* eName,int cb_type, void(*callback)(CbRtnField* cbR
 		return 1;//Callback is defined before
 	}
 
-	CbWrap* cb_wrap = new CbWrap();//Œˆππ∫Ø ˝÷––Ë“™œ˙ªŸ
+	CbWrap* cb_wrap = new CbWrap();//ÊûêÊûÑÂáΩÊï∞‰∏≠ÈúÄË¶ÅÈîÄÊØÅ
 	cb_wrap->callback = callback;
 	cb_map[cb_type] = cb_wrap;
 	logger_cout(log.append(" Event:").append(eName).append(" ID:").append(to_string(cb_type)).append(" register").c_str());
@@ -46,7 +46,7 @@ int uv_mduser::On(const char* eName,int cb_type, void(*callback)(CbRtnField* cbR
 void uv_mduser::Connect(UVConnectField* pConnectField, void(*callback)(int, void*), int uuid) {
 	UVConnectField* _pConnectField = new UVConnectField();
 	memcpy(_pConnectField, pConnectField, sizeof(UVConnectField));
-	this->invoke(_pConnectField, 0, T_CONNECT_RE, callback, uuid);//pConnectField∫Ø ˝Õ‚≤øœ˙ªŸ
+	this->invoke(_pConnectField, 0, T_CONNECT_RE, callback, uuid);//pConnectFieldÂáΩÊï∞Â§ñÈÉ®ÈîÄÊØÅ
 }
 
 void uv_mduser::ReqUserLogin(CThostFtdcReqUserLoginField *pReqUserLoginField, void(*callback)(int, void*), int uuid) {
@@ -80,7 +80,7 @@ void uv_mduser::UnSubscribeMarketData(char *ppInstrumentID[], int nCount, void(*
 void uv_mduser::OnFrontConnected() {
 	std::string log = "uv_mduser OnFrontConnected";
 	logger_cout(log.c_str());
-	CbRtnField* field = new CbRtnField();//µ˜”√ÕÍ±œ∫Û–Ë“™œ˙ªŸ
+	CbRtnField* field = new CbRtnField();//Ë∞ÉÁî®ÂÆåÊØïÂêéÈúÄË¶ÅÈîÄÊØÅ
 	field->eFlag = T_ON_CONNECT;//FrontConnected
     field->work.data = field;
 	uv_queue_work(uv_default_loop(), &field->work, _on_async, _on_completed);
@@ -89,10 +89,10 @@ void uv_mduser::OnFrontConnected() {
 void uv_mduser::OnFrontDisconnected(int nReason) {
 	std::string log = "uv_mduser OnFrontDisconnected------>";
 	logger_cout(log.append("nReason:").append(to_string(nReason)).c_str());
-	CbRtnField* field = new CbRtnField();//µ˜”√ÕÍ±œ∫Û–Ë“™œ˙ªŸ
+	CbRtnField* field = new CbRtnField();//Ë∞ÉÁî®ÂÆåÊØïÂêéÈúÄË¶ÅÈîÄÊØÅ
 	field->eFlag = T_ON_DISCONNECTED;//FrontConnected
 	field->nReason = nReason;
-	field->work.data = field;//∂‘œÛœ˙ªŸ∫Û£¨÷∏’Î«Âø’
+	field->work.data = field;//ÂØπË±°ÈîÄÊØÅÂêéÔºåÊåáÈíàÊ∏ÖÁ©∫
 	uv_queue_work(uv_default_loop(), &field->work, _on_async, _on_completed);
 }
 
@@ -162,7 +162,7 @@ void uv_mduser::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarke
 	on_invoke(T_ON_RTNDEPTHMARKETDATA, _pDepthMarketData, new CThostFtdcRspInfoField(), 0, 0);
 }
 
-///uv_queue_work “Ï≤Ωµ˜”√∑Ω∑®
+///uv_queue_work ÂºÇÊ≠•Ë∞ÉÁî®ÊñπÊ≥ï
 void uv_mduser::_async(uv_work_t * work) {
 	LookupCtpApiBaton* baton = static_cast<LookupCtpApiBaton*>(work->data);
 	uv_mduser* uv_mduser_obj = static_cast<uv_mduser*>(baton->uv_trader_obj);
@@ -172,7 +172,7 @@ void uv_mduser::_async(uv_work_t * work) {
 	{
 						 UVConnectField* _pConnectF = static_cast<UVConnectField*>(baton->args);
 						 uv_mduser_obj->m_pApi = CThostFtdcMdApi::CreateFtdcMdApi(_pConnectF->szPath);
-						 uv_mduser_obj->m_pApi->RegisterSpi(uv_mduser_obj);			// ◊¢≤· ¬º˛¿‡
+						 uv_mduser_obj->m_pApi->RegisterSpi(uv_mduser_obj);			// Ê≥®ÂÜå‰∫ã‰ª∂Á±ª
 						 uv_mduser_obj->m_pApi->RegisterFront(_pConnectF->front_addr);
 						 uv_mduser_obj->m_pApi->Init();
 						 logger_cout(log.append("connect successed").c_str());
@@ -210,7 +210,7 @@ void uv_mduser::_async(uv_work_t * work) {
 	}
 	}
 }
-///uv_queue_work ∑Ω∑®ÕÍ≥…ªÿµ˜
+///uv_queue_work ÊñπÊ≥ïÂÆåÊàêÂõûË∞É
 void uv_mduser::_completed(uv_work_t * work, int) {
 	LookupCtpApiBaton* baton = static_cast<LookupCtpApiBaton*>(work->data);
 	baton->callback(baton->nResult, baton);
@@ -242,7 +242,7 @@ void uv_mduser::_on_completed(uv_work_t * work,int){
 }
 
 void uv_mduser::invoke(void* field, int count, int ret, void(*callback)(int, void*), int uuid) {
-	LookupCtpApiBaton* baton = new LookupCtpApiBaton();//ÕÍ≥…∫Ø ˝÷––Ë“™œ˙ªŸ
+	LookupCtpApiBaton* baton = new LookupCtpApiBaton();//ÂÆåÊàêÂáΩÊï∞‰∏≠ÈúÄË¶ÅÈîÄÊØÅ
 	baton->work.data = baton;
 	baton->uv_trader_obj = this;
 	baton->callback = callback;

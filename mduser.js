@@ -1,4 +1,4 @@
-var ctp = require('bindings')('shifctp');
+var ctp = require('bindings')('ctp');
 ctp.settings({ log: true});
 var mduser = ctp.createMdUser();
 mduser.on("connect",function(result){
