@@ -154,18 +154,18 @@ trader.on('rspUserLogin',function(requestId, isLast, field, info){
 
 我分别给出了Linux和Windows平台下的工程，由于Shif发布接口文件平台的缘故，Linux版本的运行
 在Node.js x64下，Windows运行在Node.js x86下。注意下载不同版本的Node.js,下载地址：[Download Node.js](http://www.nodejs.org/download/).
-相应的Shif发布的Linux平台下CTP包选用x64的，而Windows平台的选用x86的。下载地址：[Download tradeapi](http://www.sfit.com.cn/5_2_DocumentDown.htm)
+相应的Shif发布的Linux平台下CTP包选用x64的，而Windows平台的选用x64的。下载地址：[Download tradeapi](http://www.sfit.com.cn/5_2_DocumentDown.htm)
 
     linux:centos 6.4 x64;
     gcc:v4.4.7 20120313;
     node-gyp:v1.0.2;
-    node.js:v0.10.26;
+    node.js:v6.10.2;
     tradeapi:6.3.0_20140811_traderapi_linux64
 
     windows:win7 x64;
     visual studio 2013;
     node-gyp:v1.0.2;
-    node.js:v0.10.26 x86;
+    node.js:v6.10.2 x64;
     tradeapi:6.3.0_20140811_traderapi_win32
 
 ##编译
