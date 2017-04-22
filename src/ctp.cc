@@ -1,5 +1,5 @@
 ﻿#include <node.h>
-#include <v8.h>
+#include <uv.h>
 #include "wrap_trader.h"
 #include "wrap_mduser.h"
 
@@ -7,19 +7,15 @@ using namespace v8;
 
 bool islog;//log?
 
-Handle<Value> CreateTrader(const FunctionCallbackInfo<Value>& args) {
-  Isolate* isolate = args.GetIsolate();
-  args.GetReturnValue().Set(WrapTrader::NewInstance(args));
-  // WrapTrader::NewInstance(args);
+void CreateTrader(const FunctionCallbackInfo<Value>& args) {
+  WrapTrader::NewInstance(args);
 }
 
-Handle<Value> CreateMdUser(const FunctionCallbackInfo<Value>& args) {
-	Isolate* isolate = args.GetIsolate();
-	args.GetReturnValue().Set(WrapMdUser::NewInstance(args));
-	// WrapMdUser::NewInstance(args);
+void CreateMdUser(const FunctionCallbackInfo<Value>& args) {
+	WrapMdUser::NewInstance(args);
 }
 
-Handle<Value> Settings(const FunctionCallbackInfo<Value>& args) {
+void Settings(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
 
 	if (!args[0]->IsUndefined() && args[0]->IsObject()) {
@@ -30,7 +26,6 @@ Handle<Value> Settings(const FunctionCallbackInfo<Value>& args) {
 		}		
 	}
 
-	// return args.GetReturnValue().Set(Undefined(isolate));
 	args.GetReturnValue().Set(Undefined(isolate));
 }
 

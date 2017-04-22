@@ -79,12 +79,20 @@ struct CbWrap {
 	void(*callback)(CbRtnField *data);
 };
 
+// struct ptrCmp
+// {
+//     bool operator()( const char * s1, const char * s2 ) const
+//     {
+//         return strcmp( s1, s2 ) < 0;
+//     }
+// };
 struct ptrCmp
 {
-    bool operator()( const char * s1, const char * s2 ) const
-    {
-        return strcmp( s1, s2 ) < 0;
-    }
+  bool operator()( std::string s1, std::string s2 ) const
+  {
+    // return strcmp( s1, s2 ) < 0;
+    return s1 == s2;
+  }
 };
 
 #endif

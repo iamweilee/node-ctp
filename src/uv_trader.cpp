@@ -2,6 +2,11 @@
 #include "uv_trader.h"
 #include "ThostFtdcTraderApi.h"
 #include "ThostFtdcUserApiDataType.h"
+#include "ThostFtdcMdApi.h"
+#include <cstring>
+#include <sstream>
+#include "wraper_struct.h"
+#include <string>
 
 std::map<int, CbWrap*> uv_trader::cb_map;
 
@@ -22,24 +27,17 @@ void logger_cout(const char* content) {
 
 uv_trader::uv_trader(void) {
 	iRequestID = 0;
-    uv_async_init(uv_default_loop(),&async_t,NULL);//靠Node靠
+  uv_async_init(uv_default_loop(),&async_t,NULL);//靠Node靠
 }
 uv_trader::~uv_trader(void) {
-    uv_close((uv_handle_t*)&async_t,NULL);
+  uv_close((uv_handle_t*)&async_t,NULL);
 }
 
-void uv_trader::Disconnect() {
-	m_pApi->RegisterSpi(NULL);
-	m_pApi->Release();
-	m_pApi = NULL;
-
-	std::map<int, CbWrap*>::iterator callback_it = cb_map.begin();
-	while (callback_it != cb_map.end()) {
-	    delete callback_it->second;
-		callback_it++;
-	}
-	logger_cout("uv_trader Disconnect------>object destroyed");
+const char* uv_trader::GetTradingDay(){
+  return this->m_pApi->GetTradingDay(); 
 }
+
+
 int uv_trader::On(const char* eName,int cb_type, void(*callback)(CbRtnField* cbResult)) {
 	std::string log = "uv_trader On------>";
 	std::map<int, CbWrap*>::iterator it = cb_map.find(cb_type);
@@ -59,6 +57,20 @@ void uv_trader::Connect(UVConnectField* pConnectField, void(*callback)(int, void
 	memcpy(_pConnectField, pConnectField, sizeof(UVConnectField));
 	this->invoke(_pConnectField, T_CONNECT_RE, callback, uuid);//pConnectField函数外部销毁
 }
+
+void uv_trader::Disconnect() {
+	m_pApi->RegisterSpi(NULL);
+	m_pApi->Release();
+	m_pApi = NULL;
+
+	std::map<int, CbWrap*>::iterator callback_it = cb_map.begin();
+	while (callback_it != cb_map.end()) {
+	    delete callback_it->second;
+		callback_it++;
+	}
+	logger_cout("uv_trader Disconnect------>object destroyed");
+}
+
 void uv_trader::ReqUserLogin(CThostFtdcReqUserLoginField *pReqUserLoginField, void(*callback)(int, void*), int uuid) {
 	CThostFtdcReqUserLoginField *_pReqUserLoginField = new CThostFtdcReqUserLoginField();
 	memcpy(_pReqUserLoginField, pReqUserLoginField, sizeof(CThostFtdcReqUserLoginField));
@@ -118,10 +130,6 @@ void uv_trader::ReqQrySettlementInfo(CThostFtdcQrySettlementInfoField *pQrySettl
 	CThostFtdcQrySettlementInfoField *_pQrySettlementInfo = new CThostFtdcQrySettlementInfoField();
 	memcpy(_pQrySettlementInfo, pQrySettlementInfo, sizeof(CThostFtdcQrySettlementInfoField));
 	this->invoke(_pQrySettlementInfo, T_SETTLEMENTINFO_RE, callback, uuid);
-}
-
-const char* uv_trader::GetTradingDay(){
-    return this->m_pApi->GetTradingDay(); 
 }
 
 void uv_trader::OnFrontConnected() {		
@@ -335,7 +343,8 @@ void uv_trader::_async(uv_work_t * work) {
 						 uv_trader_obj->m_pApi->SubscribePrivateTopic(static_cast<THOST_TE_RESUME_TYPE>(_pConnectF->private_topic_type));
 						 uv_trader_obj->m_pApi->RegisterFront(_pConnectF->front_addr);
 						 uv_trader_obj->m_pApi->Init();
-						 logger_cout(log.append("invoke connect,the result is 0").c_str());
+						 // logger_cout(log.append("invoke connect,the result is 0").c_str());
+						  logger_cout(log.append("invoke connect,the result is 0 | szPath is ").append(_pConnectF->szPath).append(CThostFtdcTraderApi::GetApiVersion()).c_str());
 						 break;
 	}
 	case T_LOGIN_RE:

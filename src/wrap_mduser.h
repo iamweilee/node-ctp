@@ -1,5 +1,5 @@
-﻿#ifndef N_MDUSER_H_
-#define N_MDUSER_H_
+﻿#ifndef WRAP_MDUSER_H
+#define WRAP_MDUSER_H
 
 #include "stdafx.h"
 #include <iostream>
@@ -25,19 +25,20 @@ public:
 	WrapMdUser(void);
 	~WrapMdUser(void);
 
-	static Handle<Value> Connect(const FunctionCallbackInfo<Value>& args);
-	static Handle<Value> On(const FunctionCallbackInfo<Value>& args);
-	static Handle<Value> ReqUserLogin(const FunctionCallbackInfo<Value>& args);
-	static Handle<Value> ReqUserLogout(const FunctionCallbackInfo<Value>& args);
-	static Handle<Value>  SubscribeMarketData(const FunctionCallbackInfo<Value>& args);
-	static Handle<Value>  UnSubscribeMarketData(const FunctionCallbackInfo<Value>& args);
-	static Handle<Value> Disposed(const FunctionCallbackInfo<Value>& args);
-	static void Init(int args);
-	static Handle<Value> NewInstance(const FunctionCallbackInfo<Value>& args);
+	static void Init(Isolate* isolate);
+	static void NewInstance(const FunctionCallbackInfo<Value>& args);
+	static void Connect(const FunctionCallbackInfo<Value>& args);
+	static void On(const FunctionCallbackInfo<Value>& args);
+	static void ReqUserLogin(const FunctionCallbackInfo<Value>& args);
+	static void ReqUserLogout(const FunctionCallbackInfo<Value>& args);
+	static void SubscribeMarketData(const FunctionCallbackInfo<Value>& args);
+	static void UnSubscribeMarketData(const FunctionCallbackInfo<Value>& args);
+	static void Disposed(const FunctionCallbackInfo<Value>& args);
+	
 
 private:
 	static void initEventMap();
-	static Handle<Value> New(const FunctionCallbackInfo<Value>& args);
+	static void New(const FunctionCallbackInfo<Value>& args);
 	static void pkg_cb_userlogin(CbRtnField* data, Local<Value>*cbArray);
 	static void pkg_cb_userlogout(CbRtnField* data, Local<Value>*cbArray);
 	static void pkg_cb_rspsubmarketdata(CbRtnField* data, Local<Value>*cbArray);
@@ -51,7 +52,7 @@ private:
 	static void FunCallback(CbRtnField *data);
 	static void FunRtnCallback(int result, void* baton);
 	static Persistent<Function> constructor;
-	static std::map<const char*, int,ptrCmp> event_map;
+	static std::map<std::string, int> event_map;
 	static std::map<int, Persistent<Function> > callback_map;
 	static std::map<int, Persistent<Function> > fun_rtncb_map;
 };

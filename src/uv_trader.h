@@ -12,18 +12,23 @@
 #include <node.h>
 #include "wraper_struct.h"
 
-extern std::string to_string(int val);
 extern bool islog;
 void logger_cout(const char* content);
+std::string to_string(int val);
+std::string charto_string(char val);
 
 class uv_trader :public CThostFtdcTraderSpi {
 public:
 	uv_trader(void);
 	virtual ~uv_trader(void);
+	
+	const char* GetTradingDay();
 	///注册事件
 	int On(const char* eName,int cb_type, void(*callback)(CbRtnField* cbResult));
 	///连接前置机
 	void  Connect(UVConnectField* pConnectField, void(*callback)(int, void*),int uuid);
+	///断开
+	void Disconnect();
 	///用户登录请求
 	void  ReqUserLogin(CThostFtdcReqUserLoginField *pReqUserLoginField, void(*callback)(int, void*),int uuid);
 	///登出请求 
@@ -49,11 +54,8 @@ public:
 	///请求查询投资者结算结果
 	void ReqQrySettlementInfo(CThostFtdcQrySettlementInfoField *pQrySettlementInfo, void(*callback)(int, void*),int uuid);
     
-    const char* GetTradingDay();
 	//对象初始化
 	//void Init(int args);
-	///断开
-	void Disconnect();
 	
 private:
 	///异步调用 queue
@@ -118,7 +120,7 @@ private:
 	CThostFtdcTraderApi* m_pApi;//交易API
 
 	int iRequestID;
-    uv_async_t async_t;
+  uv_async_t async_t;
 	static std::map<int, CbWrap*> cb_map;
 };
 
