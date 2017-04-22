@@ -22,7 +22,7 @@ trader.on('rspInfoconfirm',function(requestId, isLast, field, info){
 
 });
 
-trader.connect(',undefined,0,1,function(result){
+trader.connect('',undefined,0,1,function(result){
     console.log('connect return val is '+result);
 });
 

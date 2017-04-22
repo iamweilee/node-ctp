@@ -18,7 +18,7 @@ Shif发布的CTP接口是基于C++语言开发的，我们使用CTP开发交易�
 
 ```javascript
 
-var ctp = require('bindings')('shifctp');
+var ctp = require('bindings')('ctp');
 ctp.settings({log:true});
 var mduser = ctp.createMduser();
 mduser.on("connect",function(result){
@@ -68,7 +68,7 @@ mduser.connect('ctp url', undefined, function (result){
 ```javascript
 //confirm
 
-ctp = require('bindings')('shifctp');
+ctp = require('bindings')('ctp');
 ctp.settings({ log: true});
 var trader = ctp.createTrader();
 
@@ -180,8 +180,8 @@ trader.on('rspUserLogin',function(requestId, isLast, field, info){
 ##API介绍
  
 ```javascript
-//加载shifctp模块
-var ctp = require('bindings')('shifctp');
+//加载ctp模块
+var ctp = require('bindings')('ctp');
 //设置日志开关
 ctp.settings({log:true});
 //初始化Mduser对象

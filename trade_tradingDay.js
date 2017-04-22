@@ -22,7 +22,7 @@ trader.on('rspUserLogin',function(requestId, isLast, field, info){
 
 });
 
-trader.connect('',undefined,0,1,function(result){
+trader.connect('tcp://180.166.103.21:51205',undefined,0,1,function(result){
     console.log('connect return val is '+result);
 });
 
