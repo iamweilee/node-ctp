@@ -181,7 +181,7 @@ void WrapTrader::Connect(const FunctionCallbackInfo<Value>& args) {
   }
 
   Local <String> frontAddr = args[0]->ToString();
-  Local <String> szPath = args[1]->IsUndefined() ? String::NewFromUtf8(isolate, "t") : args[0]->ToString();
+  Local <String> szPath = args[1]->IsUndefined() ? String::NewFromUtf8(isolate, "t") : args[1]->ToString();
   String::Utf8Value addrUtf8(frontAddr);
   String::Utf8Value pathUtf8(szPath);
   int publicTopicType = args[2]->Int32Value();

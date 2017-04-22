@@ -22,8 +22,8 @@ trader.on('rspUserLogin',function(requestId, isLast, field, info){
 
 });
 
-trader.connect('tcp://180.166.103.21:51205',undefined,0,1,function(result){
-    console.log('connect return val is '+result);
+trader.connect('tcp://180.166.103.21:51205','./data/',0,1,function(result){
+  console.log('connect return val is '+result);
 });
 
 console.log('continute');

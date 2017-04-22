@@ -165,8 +165,8 @@ trader.on('rspUserLogin',function(requestId, isLast, field, info){
     windows:win7 x64;
     visual studio 2013;
     node-gyp:v1.0.2;
-    node.js:v6.10.2 x64;
-    tradeapi:20160628_tradeapi64_windows
+    node.js:v6.10.2 x86;
+    tradeapi:20160628_tradeapi_windows
 
 ##编译
 
@@ -190,7 +190,8 @@ var mduser = ctp.createMduser();
 ###初始化CTP，并且连接前置机
 
 ```javascript
-mduser.connect('ctp url', undefined, function (result){
+// 这里假设flowPath为'./data/'，'./data/'最后一个斜杠不能少，代表是一个目录, 且该目录需要自己手动创建，该目录用来存放.con文件
+mduser.connect('ctp url', 'flowPath', function (result){
     console.log(result);
 
 });

@@ -126,7 +126,7 @@ void WrapMdUser::Connect(const FunctionCallbackInfo<Value>& args) {
 	}
 
 	Local<String> frontAddr = args[0]->ToString();
-	Local<String> szPath = args[1]->IsUndefined() ? String::NewFromUtf8(isolate, "m") : args[0]->ToString();
+	Local<String> szPath = args[1]->IsUndefined() ? String::NewFromUtf8(isolate, "m") : args[1]->ToString();
 	String::Utf8Value addrUtf8(frontAddr);
 	String::Utf8Value pathUtf8(szPath);
 
