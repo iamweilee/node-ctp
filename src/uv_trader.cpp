@@ -121,6 +121,11 @@ void uv_trader::ReqQryInstrumentMarginRate(CThostFtdcQryInstrumentMarginRateFiel
 	memcpy(_pQryInstrumentMarginRate, pQryInstrumentMarginRate, sizeof(CThostFtdcQryInstrumentMarginRateField));
 	this->invoke(_pQryInstrumentMarginRate, T_MARGINRATE_RE, callback, uuid);
 }
+void uv_trader::ReqQryInstrumentCommissionRate(CThostFtdcQryInstrumentCommissionRateField *pQryInstrumentCommissionRate, void(*callback)(int, void*), int uuid) {
+	CThostFtdcQryInstrumentCommissionRateField * _pQryInstrumentCommissionRate = new CThostFtdcQryInstrumentCommissionRateField();
+	memcpy(_pQryInstrumentCommissionRate, pQryInstrumentCommissionRate, sizeof(CThostFtdcQryInstrumentCommissionRateField));
+	this->invoke(_pQryInstrumentCommissionRate, T_COMMISSIONRATE_RE, callback, uuid);
+}
 void uv_trader::ReqQryDepthMarketData(CThostFtdcQryDepthMarketDataField *pQryDepthMarketData, void(*callback)(int, void*), int uuid) {
 	CThostFtdcQryDepthMarketDataField *_pQryDepthMarketData = new CThostFtdcQryDepthMarketDataField();
 	memcpy(_pQryDepthMarketData, pQryDepthMarketData, sizeof(CThostFtdcQryDepthMarketDataField));
@@ -423,6 +428,14 @@ void uv_trader::_async(uv_work_t * work) {
 							CThostFtdcQryInstrumentMarginRateField *_pQryInstrumentMarginRate = static_cast<CThostFtdcQryInstrumentMarginRateField*>(baton->args);
 							baton->nResult = uv_trader_obj->m_pApi->ReqQryInstrumentMarginRate(_pQryInstrumentMarginRate, baton->iRequestID);
 							logger_cout(log.append("invoke ReqQryInstrumentMarginRate,the result:").append(to_string(baton->nResult)).c_str());
+
+							break;
+	}
+	case T_COMMISSIONRATE_RE:
+	{
+							CThostFtdcQryInstrumentCommissionRateField *_pQryInstrumentCommissionRate = static_cast<CThostFtdcQryInstrumentCommissionRateField*>(baton->args);
+							baton->nResult = uv_trader_obj->m_pApi->ReqQryInstrumentCommissionRate(_pQryInstrumentCommissionRate, baton->iRequestID);
+							logger_cout(log.append("invoke ReqQryInstrumentCommissionRate,the result:").append(to_string(baton->nResult)).c_str());
 
 							break;
 	}

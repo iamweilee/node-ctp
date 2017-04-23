@@ -41,6 +41,7 @@ void WrapTrader::Init(Isolate *isolate) {
 	NODE_SET_PROTOTYPE_METHOD(tpl, "reqOrderInsert", ReqOrderInsert);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "reqOrderAction", ReqOrderAction);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "reqQryInstrumentMarginRate", ReqQryInstrumentMarginRate);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "reqQryInstrumentCommissionRate", ReqQryInstrumentCommissionRate);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "reqQryDepthMarketData", ReqQryDepthMarketData);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "reqQrySettlementInfo", ReqQrySettlementInfo);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "disconnect", Disposed);
@@ -106,6 +107,8 @@ void WrapTrader::initEventMap() {
 	event_map["rqDdpthmarketData"] = T_ON_RQDEPTHMARKETDATA;
 	event_map["rqSettlementInfo"] = T_ON_RQSETTLEMENTINFO;
 	event_map["rspError"] = T_ON_RSPERROR;
+	event_map["rqInstrumentMarginRate"] = T_ON_RQINSTRUMENTMARGINRATE;
+	event_map["rqInstrumentCommissionRate"] = T_ON_RQINSTRUMENTCOMMISSIONRATE;
 }
 
 void WrapTrader::GetTradingDay(const FunctionCallbackInfo<Value>& args){
@@ -296,14 +299,14 @@ void WrapTrader::ReqSettlementInfoConfirm(const FunctionCallbackInfo<Value>& arg
 
 	Local<String> broker = args[0]->ToString();
 	Local<String> investorId = args[1]->ToString();
-	String::Utf8Value brokerAscii(broker);
-	String::Utf8Value investorIdAscii(investorId);
+	String::Utf8Value brokerUtf8(broker);
+	String::Utf8Value investorIdUtf8(investorId);
 
 	CThostFtdcSettlementInfoConfirmField req;
 	memset(&req, 0, sizeof(req));
-	strcpy(req.BrokerID, ((std::string)*brokerAscii).c_str());
-	strcpy(req.InvestorID, ((std::string)*investorIdAscii).c_str());
-	logger_cout(log.append(" ").append((std::string)*brokerAscii).append("|").append((std::string)*investorIdAscii).c_str());
+	strcpy(req.BrokerID, ((std::string)*brokerUtf8).c_str());
+	strcpy(req.InvestorID, ((std::string)*investorIdUtf8).c_str());
+	logger_cout(log.append(" ").append((std::string)*brokerUtf8).append("|").append((std::string)*investorIdUtf8).c_str());
 	obj->uvTrader->ReqSettlementInfoConfirm(&req, FunRtnCallback, uuid);
 	return ;
 }
@@ -328,12 +331,12 @@ void WrapTrader::ReqQryInstrument(const FunctionCallbackInfo<Value>& args) {
 	}
 
 	Local<String> instrumentId = args[0]->ToString();
-	String::Utf8Value instrumentIdAscii(instrumentId);
+	String::Utf8Value instrumentIdUtf8(instrumentId);
 
 	CThostFtdcQryInstrumentField req;
 	memset(&req, 0, sizeof(req));
-	strcpy(req.InstrumentID, ((std::string)*instrumentIdAscii).c_str());
-	logger_cout(log.append(" ").append((std::string)*instrumentIdAscii).c_str());
+	strcpy(req.InstrumentID, ((std::string)*instrumentIdUtf8).c_str());
+	logger_cout(log.append(" ").append((std::string)*instrumentIdUtf8).c_str());
 	obj->uvTrader->ReqQryInstrument(&req, FunRtnCallback, uuid);
 	return ;
 }
@@ -358,14 +361,14 @@ void WrapTrader::ReqQryTradingAccount(const FunctionCallbackInfo<Value>& args) {
 	}
 	Local<String> broker = args[0]->ToString();
 	Local<String> investorId = args[1]->ToString();
-	String::Utf8Value brokerAscii(broker);
-	String::Utf8Value investorIdAscii(investorId);
+	String::Utf8Value brokerUtf8(broker);
+	String::Utf8Value investorIdUtf8(investorId);
 
 	CThostFtdcQryTradingAccountField req;
 	memset(&req, 0, sizeof(req));
-	strcpy(req.BrokerID, ((std::string)*brokerAscii).c_str());
-	strcpy(req.InvestorID, ((std::string)*investorIdAscii).c_str());
-	logger_cout(log.append(" ").append((std::string)*brokerAscii).append("|").append((std::string)*investorIdAscii).c_str());
+	strcpy(req.BrokerID, ((std::string)*brokerUtf8).c_str());
+	strcpy(req.InvestorID, ((std::string)*investorIdUtf8).c_str());
+	logger_cout(log.append(" ").append((std::string)*brokerUtf8).append("|").append((std::string)*investorIdUtf8).c_str());
 	obj->uvTrader->ReqQryTradingAccount(&req, FunRtnCallback, uuid);
 	return ;
 }
@@ -391,17 +394,17 @@ void WrapTrader::ReqQryInvestorPosition(const FunctionCallbackInfo<Value>& args)
 	Local<String> broker = args[0]->ToString();
 	Local<String> investorId = args[1]->ToString();
 	Local<String> instrumentId = args[2]->ToString();
-	String::Utf8Value brokerAscii(broker);
-	String::Utf8Value investorIdAscii(investorId);
-	String::Utf8Value instrumentIdAscii(instrumentId);
+	String::Utf8Value brokerUtf8(broker);
+	String::Utf8Value investorIdUtf8(investorId);
+	String::Utf8Value instrumentIdUtf8(instrumentId);
 
 	CThostFtdcQryInvestorPositionField req;
 	memset(&req, 0, sizeof(req));
-	strcpy(req.BrokerID, ((std::string)*brokerAscii).c_str());
-	strcpy(req.InvestorID, ((std::string)*investorIdAscii).c_str());
-	strcpy(req.InstrumentID, ((std::string)*instrumentIdAscii).c_str());
+	strcpy(req.BrokerID, ((std::string)*brokerUtf8).c_str());
+	strcpy(req.InvestorID, ((std::string)*investorIdUtf8).c_str());
+	strcpy(req.InstrumentID, ((std::string)*instrumentIdUtf8).c_str());
 
-	logger_cout(log.append(" ").append((std::string)*brokerAscii).append("|").append((std::string)*investorIdAscii).append("|").append((std::string)*instrumentIdAscii).c_str());
+	logger_cout(log.append(" ").append((std::string)*brokerUtf8).append("|").append((std::string)*investorIdUtf8).append("|").append((std::string)*instrumentIdUtf8).c_str());
 	obj->uvTrader->ReqQryInvestorPosition(&req, FunRtnCallback, uuid);
 	return ;
 }
@@ -427,17 +430,17 @@ void WrapTrader::ReqQryInvestorPositionDetail(const FunctionCallbackInfo<Value>&
 	Local<String> broker = args[0]->ToString();
 	Local<String> investorId = args[1]->ToString();
 	Local<String> instrumentId = args[2]->ToString();
-	String::Utf8Value brokerAscii(broker);
-	String::Utf8Value investorIdAscii(investorId);
-	String::Utf8Value instrumentIdAscii(instrumentId);
+	String::Utf8Value brokerUtf8(broker);
+	String::Utf8Value investorIdUtf8(investorId);
+	String::Utf8Value instrumentIdUtf8(instrumentId);
 
 	CThostFtdcQryInvestorPositionDetailField req;
 	memset(&req, 0, sizeof(req));
-	strcpy(req.BrokerID, ((std::string)*brokerAscii).c_str());
-	strcpy(req.InvestorID, ((std::string)*investorIdAscii).c_str());
-	strcpy(req.InstrumentID, ((std::string)*instrumentIdAscii).c_str());
+	strcpy(req.BrokerID, ((std::string)*brokerUtf8).c_str());
+	strcpy(req.InvestorID, ((std::string)*investorIdUtf8).c_str());
+	strcpy(req.InstrumentID, ((std::string)*instrumentIdUtf8).c_str());
 
-	logger_cout(log.append(" ").append((std::string)*brokerAscii).append("|").append((std::string)*investorIdAscii).append("|").append((std::string)*instrumentIdAscii).c_str());
+	logger_cout(log.append(" ").append((std::string)*brokerUtf8).append("|").append((std::string)*investorIdUtf8).append("|").append((std::string)*instrumentIdUtf8).c_str());
 	obj->uvTrader->ReqQryInvestorPositionDetail(&req, FunRtnCallback, uuid);
 	return ;
 }
@@ -730,23 +733,69 @@ void WrapTrader::ReqQryInstrumentMarginRate(const FunctionCallbackInfo<Value>& a
 	Local<String> investorId = args[1]->ToString();
 	Local<String> instrumentId = args[2]->ToString();
 	int32_t hedgeFlag = args[3]->Int32Value();
-	String::Utf8Value brokerAscii(broker);
-	String::Utf8Value investorIdAscii(investorId);
-	String::Utf8Value instrumentIdAscii(instrumentId);
+	String::Utf8Value brokerUtf8(broker);
+	String::Utf8Value investorIdUtf8(investorId);
+	String::Utf8Value instrumentIdUtf8(instrumentId);
 
 	CThostFtdcQryInstrumentMarginRateField req;
 	memset(&req, 0, sizeof(req));
-	strcpy(req.BrokerID, ((std::string)*brokerAscii).c_str());
-	strcpy(req.InvestorID, ((std::string)*investorIdAscii).c_str());
-	strcpy(req.InstrumentID, ((std::string)*instrumentIdAscii).c_str());
+	strcpy(req.BrokerID, ((std::string)*brokerUtf8).c_str());
+	strcpy(req.InvestorID, ((std::string)*investorIdUtf8).c_str());
+	strcpy(req.InstrumentID, ((std::string)*instrumentIdUtf8).c_str());
 	req.HedgeFlag = hedgeFlag;
 	logger_cout(log.append(" ").
-		append((std::string)*brokerAscii).append("|").
-		append((std::string)*investorIdAscii).append("|").
-		append((std::string)*instrumentIdAscii).append("|").
+		append((std::string)*brokerUtf8).append("|").
+		append((std::string)*investorIdUtf8).append("|").
+		append((std::string)*instrumentIdUtf8).append("|").
 		append(to_string(hedgeFlag)).append("|").c_str());	 
 
 	obj->uvTrader->ReqQryInstrumentMarginRate(&req, FunRtnCallback, uuid);
+	return ;
+}
+
+void WrapTrader::ReqQryInstrumentCommissionRate(const FunctionCallbackInfo<Value>& args) {
+	Isolate *isolate = args.GetIsolate();
+	std::string log = "wrap_trader ReqQryInstrumentCommissionRate------>";
+
+	if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined() || args[3]->IsUndefined()) {
+		std::string _head = std::string(log);
+		logger_cout(_head.append(" Wrong arguments").c_str());
+		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong arguments")));
+		return ;
+	}
+	int uuid = -1;
+	WrapTrader* obj = ObjectWrap::Unwrap<WrapTrader>(args.Holder());
+
+	if (!args[4]->IsUndefined() && args[4]->IsFunction()) {
+		uuid = ++s_uuid;
+		fun_rtncb_map[uuid].Reset(isolate, Local<Function>::Cast(args[4]));
+		std::string _head = std::string(log);
+		logger_cout(_head.append(" uuid is ").append(to_string(uuid)).c_str());
+	}
+
+	Local<String> broker = args[0]->ToString();
+	Local<String> investorId = args[1]->ToString();
+	Local<String> instrumentId = args[2]->ToString();
+	Local<String> exchangeId = args[3]->ToString();
+	String::Utf8Value brokerUtf8(broker);
+	String::Utf8Value investorIdUtf8(investorId);
+	String::Utf8Value instrumentIdUtf8(instrumentId);
+	String::Utf8Value exchangeIdUtf8(exchangeId);
+
+	CThostFtdcQryInstrumentCommissionRateField req;
+	memset(&req, 0, sizeof(req));
+	strcpy(req.BrokerID, ((std::string)*brokerUtf8).c_str());
+	strcpy(req.InvestorID, ((std::string)*investorIdUtf8).c_str());
+	strcpy(req.InstrumentID, ((std::string)*instrumentIdUtf8).c_str());
+	strcpy(req.InstrumentID, ((std::string)*exchangeIdUtf8).c_str());
+	
+	logger_cout(log.append(" ").
+		append((std::string)*brokerUtf8).append("|").
+		append((std::string)*investorIdUtf8).append("|").
+		append((std::string)*instrumentIdUtf8).append("|").
+		append((std::string)*exchangeIdUtf8).append("|").c_str());	 
+
+	obj->uvTrader->ReqQryInstrumentCommissionRate(&req, FunRtnCallback, uuid);
 	return ;
 }
 
@@ -770,13 +819,13 @@ void WrapTrader::ReqQryDepthMarketData(const FunctionCallbackInfo<Value>& args) 
 	}
 
 	Local<String> instrumentId = args[0]->ToString();
-	String::Utf8Value instrumentIdAscii(instrumentId);
+	String::Utf8Value instrumentIdUtf8(instrumentId);
 
 	CThostFtdcQryDepthMarketDataField req;
 	memset(&req, 0, sizeof(req));
-	strcpy(req.InstrumentID, ((std::string)*instrumentIdAscii).c_str());
+	strcpy(req.InstrumentID, ((std::string)*instrumentIdUtf8).c_str());
 	logger_cout(log.append(" ").
-		append((std::string)*instrumentIdAscii).append("|").c_str());
+		append((std::string)*instrumentIdUtf8).append("|").c_str());
 	obj->uvTrader->ReqQryDepthMarketData(&req, FunRtnCallback, uuid);
 	return ;
 }
@@ -803,19 +852,19 @@ void WrapTrader::ReqQrySettlementInfo(const FunctionCallbackInfo<Value>& args) {
 	Local<String> broker = args[0]->ToString();
 	Local<String> investorId = args[1]->ToString();
 	Local<String> tradingDay = args[2]->ToString();
-	String::Utf8Value brokerAscii(broker);
-	String::Utf8Value investorIdAscii(investorId);
-	String::Utf8Value tradingDayAscii(tradingDay);
+	String::Utf8Value brokerUtf8(broker);
+	String::Utf8Value investorIdUtf8(investorId);
+	String::Utf8Value tradingDayUtf8(tradingDay);
 
 	CThostFtdcQrySettlementInfoField req;
 	memset(&req, 0, sizeof(req));
-	strcpy(req.BrokerID, ((std::string)*brokerAscii).c_str());
-	strcpy(req.InvestorID, ((std::string)*investorIdAscii).c_str());
-	strcpy(req.TradingDay, ((std::string)*tradingDayAscii).c_str());
+	strcpy(req.BrokerID, ((std::string)*brokerUtf8).c_str());
+	strcpy(req.InvestorID, ((std::string)*investorIdUtf8).c_str());
+	strcpy(req.TradingDay, ((std::string)*tradingDayUtf8).c_str());
 	logger_cout(log.append(" ").
-		append((std::string)*brokerAscii).append("|").
-		append((std::string)*investorIdAscii).append("|").
-		append((std::string)*tradingDayAscii).append("|").c_str());
+		append((std::string)*brokerUtf8).append("|").
+		append((std::string)*investorIdUtf8).append("|").
+		append((std::string)*tradingDayUtf8).append("|").c_str());
 
 	obj->uvTrader->ReqQrySettlementInfo(&req, FunRtnCallback, uuid);
 	return ;

@@ -54,6 +54,8 @@ public:
 	static void ReqOrderAction(const FunctionCallbackInfo<Value>& args);
 	///请求查询合约保证金率 
 	static void ReqQryInstrumentMarginRate(const FunctionCallbackInfo<Value>& args);
+	///请求查询合约手续费率 
+	static void ReqQryInstrumentCommissionRate(const FunctionCallbackInfo<Value>& args);
 	///请求查询行情 
 	static void ReqQryDepthMarketData(const FunctionCallbackInfo<Value>& args);
 	///请求查询投资者结算结果 
