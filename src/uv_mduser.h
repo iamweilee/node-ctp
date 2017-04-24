@@ -1,5 +1,5 @@
-﻿#ifndef UV_MDUSER_H
-#define UV_MDUSER_H
+﻿#ifndef _UV_MDUSER_H_
+#define _UV_MDUSER_H_
 
 #include "stdafx.h"
 #include <iostream>

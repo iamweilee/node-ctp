@@ -1,5 +1,5 @@
-﻿#ifndef UV_TRADER_H
-#define UV_TRADER_H
+﻿#ifndef _UV_TRADER_H_
+#define _UV_TRADER_H_
 
 #include "stdafx.h"
 #include <iostream>

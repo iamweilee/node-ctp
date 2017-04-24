@@ -1,5 +1,5 @@
-﻿#ifndef WRAP_MDUSER_H
-#define WRAP_MDUSER_H
+﻿#ifndef _WRAP_MDUSER_H_
+#define _WRAP_MDUSER_H_
 
 #include "stdafx.h"
 #include <iostream>

@@ -1,5 +1,5 @@
-﻿#ifndef WRAP_TRADER_H
-#define WRAP_TRADER_H
+﻿#ifndef _WRAP_TRADER_H_
+#define _WRAP_TRADER_H_
 
 #include "stdafx.h"
 #include <iostream>
