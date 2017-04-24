@@ -27,5 +27,5 @@
 node_modules
 build
 log*.txt
-.log
-.con
+*.log
+*.con

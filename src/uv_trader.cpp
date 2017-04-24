@@ -304,6 +304,26 @@ void uv_trader::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThos
 	logger_cout(log.append("requestid:").append(to_string(nRequestID)).append(",islast:").append(to_string(bIsLast)).c_str());
 	on_invoke(T_ON_RQINSTRUMENT, _pInstrument, pRspInfo, nRequestID, bIsLast);
 }
+void uv_trader::OnRspQryInstrumentMarginRate(CThostFtdcInstrumentMarginRateField *pInstrumentMarginRate, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {
+	CThostFtdcInstrumentMarginRateField *_pInstrumentMarginRate = NULL;
+	if (pInstrumentMarginRate) {
+		_pInstrumentMarginRate = new CThostFtdcInstrumentMarginRateField();
+		memcpy(_pInstrumentMarginRate, pInstrumentMarginRate, sizeof(CThostFtdcInstrumentMarginRateField));
+	}
+	std::string log = "uv_trader OnRspQryInstrumentMarginRate------>";
+	logger_cout(log.append("requestid:").append(to_string(nRequestID)).append(",islast:").append(to_string(bIsLast)).c_str());
+	on_invoke(T_ON_RQINSTRUMENTMARGINRATE, _pInstrumentMarginRate, pRspInfo, nRequestID, bIsLast);
+}
+void uv_trader::OnRspQryInstrumentCommissionRate(CThostFtdcInstrumentCommissionRateField *pInstrumentCommissionRate, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {
+	CThostFtdcInstrumentCommissionRateField *_pInstrumentCommissionRate = NULL;
+	if (pInstrumentCommissionRate) {
+		_pInstrumentCommissionRate = new CThostFtdcInstrumentCommissionRateField();
+		memcpy(_pInstrumentCommissionRate, pInstrumentCommissionRate, sizeof(CThostFtdcInstrumentCommissionRateField));
+	}
+	std::string log = "uv_trader OnRspQryInstrumentCommissionRate------>";
+	logger_cout(log.append("requestid:").append(to_string(nRequestID)).append(",islast:").append(to_string(bIsLast)).c_str());
+	on_invoke(T_ON_RQINSTRUMENTCOMMISSIONRATE, _pInstrumentCommissionRate, pRspInfo, nRequestID, bIsLast);
+}
 void uv_trader::OnRspQryDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {
 	CThostFtdcDepthMarketDataField* _pDepthMarketData = NULL;
 	if (pDepthMarketData) {
