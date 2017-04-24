@@ -91,7 +91,7 @@ void WrapTrader::initEventMap() {
 	event_map["disconnected"] = T_ON_DISCONNECTED;
 	event_map["rspUserLogin"] = T_ON_RSPUSERLOGIN;
 	event_map["rspUserLogout"] = T_ON_RSPUSERLOGOUT;
-	event_map["rspInfoconfirm"] = T_ON_RSPINFOCONFIRM;
+	event_map["rspInfoConfirm"] = T_ON_RSPINFOCONFIRM;
 	event_map["rspInsert"] = T_ON_RSPINSERT;
 	event_map["errInsert"] = T_ON_ERRINSERT;
 	event_map["rspAction"] = T_ON_RSPACTION;
@@ -104,7 +104,7 @@ void WrapTrader::initEventMap() {
 	event_map["reqQryInvestorPositionDetail"] = T_ON_RQINVESTORPOSITIONDETAIL;// rqInvestorPositionDetail
 	event_map["reqQryTradingAccount"] = T_ON_RQTRADINGACCOUNT;// rqTradingAccount
 	event_map["reqQryInstrument"] = T_ON_RQINSTRUMENT;// rqInstrument
-	event_map["reqQryDepthmarketData"] = T_ON_RQDEPTHMARKETDATA;// rqDepthmarketData
+	event_map["reqQryDepthMarketData"] = T_ON_RQDEPTHMARKETDATA;// rqDepthMarketData
 	event_map["reqQrySettlementInfo"] = T_ON_RQSETTLEMENTINFO;// rqSettlementInfo
 	event_map["rspError"] = T_ON_RSPERROR;
 	event_map["reqQryInstrumentMarginRate"] = T_ON_RQINSTRUMENTMARGINRATE;// rqInstrumentMarginRate
