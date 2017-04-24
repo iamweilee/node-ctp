@@ -83,6 +83,8 @@ private:
 	static void pkg_cb_rqinstrument(CbRtnField* data, Local<Value>*cbArray);
 	static void pkg_cb_rqdepthmarketdata(CbRtnField* data, Local<Value>*cbArray);
 	static void pkg_cb_rqsettlementinfo(CbRtnField* data, Local<Value>*cbArray);
+	static void pkg_cb_rqinstrumentmarginrate(CbRtnField* data, Local<Value>*cbArray);
+	static void pkg_cb_rqinstrumentcommissionrate(CbRtnField* data, Local<Value>*cbArray);
 	static void pkg_cb_rsperror(CbRtnField* data, Local<Value>*cbArray);
 
 	static Local<Value> pkg_rspinfo(void *vpRspInfo);

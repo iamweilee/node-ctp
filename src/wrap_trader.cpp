@@ -96,19 +96,19 @@ void WrapTrader::initEventMap() {
 	event_map["errInsert"] = T_ON_ERRINSERT;
 	event_map["rspAction"] = T_ON_RSPACTION;
 	event_map["errAction"] = T_ON_ERRACTION;
-	event_map["rqOrder"] = T_ON_RQORDER;
+	event_map["reqQryOrder"] = T_ON_RQORDER;// rqOrder
 	event_map["rtnOrder"] = T_ON_RTNORDER;
-	event_map["rqTrade"] = T_ON_RQTRADE;
+	event_map["reqQryTrade"] = T_ON_RQTRADE;// rqTrade
 	event_map["rtnTrade"] = T_ON_RTNTRADE;
-	event_map["rqInvestorPosition"] = T_ON_RQINVESTORPOSITION;
-	event_map["rqInvestorPositionDetail"] = T_ON_RQINVESTORPOSITIONDETAIL;
-	event_map["rqTradingAccount"] = T_ON_RQTRADINGACCOUNT;
-	event_map["rqInstrument"] = T_ON_RQINSTRUMENT;
-	event_map["rqDdpthmarketData"] = T_ON_RQDEPTHMARKETDATA;
-	event_map["rqSettlementInfo"] = T_ON_RQSETTLEMENTINFO;
+	event_map["reqQryInvestorPosition"] = T_ON_RQINVESTORPOSITION;// rqInvestorPosition
+	event_map["reqQryInvestorPositionDetail"] = T_ON_RQINVESTORPOSITIONDETAIL;// rqInvestorPositionDetail
+	event_map["reqQryTradingAccount"] = T_ON_RQTRADINGACCOUNT;// rqTradingAccount
+	event_map["reqQryInstrument"] = T_ON_RQINSTRUMENT;// rqInstrument
+	event_map["reqQryDepthmarketData"] = T_ON_RQDEPTHMARKETDATA;// rqDepthmarketData
+	event_map["reqQrySettlementInfo"] = T_ON_RQSETTLEMENTINFO;// rqSettlementInfo
 	event_map["rspError"] = T_ON_RSPERROR;
-	event_map["rqInstrumentMarginRate"] = T_ON_RQINSTRUMENTMARGINRATE;
-	event_map["rqInstrumentCommissionRate"] = T_ON_RQINSTRUMENTCOMMISSIONRATE;
+	event_map["reqQryInstrumentMarginRate"] = T_ON_RQINSTRUMENTMARGINRATE;// rqInstrumentMarginRate
+	event_map["reqQryInstrumentCommissionRate"] = T_ON_RQINSTRUMENTCOMMISSIONRATE;// rqInstrumentCommissionRate
 }
 
 void WrapTrader::GetTradingDay(const FunctionCallbackInfo<Value>& args){
@@ -1049,6 +1049,22 @@ void WrapTrader::FunCallback(CbRtnField *data) {
 			fn->Call(isolate->GetCurrentContext()->Global(), 4, argv);
 	    break;
 		}
+		case T_ON_RQINSTRUMENTMARGINRATE:
+		{
+			Local <Value> argv[4];
+	    pkg_cb_rqinstrumentmarginrate(data, argv);
+	    Local<Function> fn = Local<Function>::New(isolate, cIt->second);
+			fn->Call(isolate->GetCurrentContext()->Global(), 4, argv);
+	    break;
+		}
+		case T_ON_RQINSTRUMENTCOMMISSIONRATE:
+		{
+			Local <Value> argv[4];
+	    pkg_cb_rqinstrumentcommissionrate(data, argv);
+	    Local<Function> fn = Local<Function>::New(isolate, cIt->second);
+			fn->Call(isolate->GetCurrentContext()->Global(), 4, argv);
+	    break;
+		}
 		case T_ON_RSPERROR:
 		{
 			Local <Value> argv[3];
@@ -1807,6 +1823,63 @@ void WrapTrader::pkg_cb_rqsettlementinfo(CbRtnField* data, Local<Value>*cbArray)
 	*(cbArray + 3) = pkg_rspinfo(data->rspInfo);
 	return;
 }
+
+void WrapTrader::pkg_cb_rqinstrumentmarginrate(CbRtnField* data, Local<Value>*cbArray) {
+	Isolate *isolate = Isolate::GetCurrent();
+
+  *cbArray = Number::New(isolate, data->nRequestID);
+  *(cbArray + 1) = Boolean::New(isolate, data->bIsLast);
+  if(data->rtnField!=NULL){
+    CThostFtdcInstrumentMarginRateField *pInstrumentMarginRate = static_cast<CThostFtdcInstrumentMarginRateField*>(data->rtnField);
+		Local<Object> jsonRtn = Object::New(isolate);
+		jsonRtn->Set(String::NewFromUtf8(isolate, "InstrumentID"), String::NewFromUtf8(isolate, pInstrumentMarginRate->InstrumentID));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "InvestorRange"), String::NewFromUtf8(isolate, charto_string(pInstrumentMarginRate->InvestorRange).c_str()));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "BrokerID"), String::NewFromUtf8(isolate, pInstrumentMarginRate->BrokerID));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "InvestorID"), String::NewFromUtf8(isolate, pInstrumentMarginRate->InvestorID));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "HedgeFlag"), String::NewFromUtf8(isolate, charto_string(pInstrumentMarginRate->HedgeFlag).c_str()));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "LongMarginRatioByMoney"), Number::New(isolate, pInstrumentMarginRate->LongMarginRatioByMoney));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "LongMarginRatioByVolume"), Number::New(isolate, pInstrumentMarginRate->LongMarginRatioByVolume));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "ShortMarginRatioByMoney"), Number::New(isolate, pInstrumentMarginRate->ShortMarginRatioByMoney));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "ShortMarginRatioByVolume"), Number::New(isolate, pInstrumentMarginRate->ShortMarginRatioByVolume));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "IsRelative"), Boolean::New(isolate, pInstrumentMarginRate->IsRelative));
+	}
+	else {
+	    *(cbArray + 2) = Local<Value>::New(isolate, Undefined(isolate));
+    }
+	*(cbArray + 3) = pkg_rspinfo(data->rspInfo);
+	return;
+}
+
+void WrapTrader::pkg_cb_rqinstrumentcommissionrate(CbRtnField* data, Local<Value>*cbArray) {
+	Isolate *isolate = Isolate::GetCurrent();
+
+  *cbArray = Number::New(isolate, data->nRequestID);
+  *(cbArray + 1) = Boolean::New(isolate, data->bIsLast);
+  if(data->rtnField!=NULL){
+    CThostFtdcInstrumentCommissionRateField *pInstrumentCommissionRate = static_cast<CThostFtdcInstrumentCommissionRateField*>(data->rtnField);
+		Local<Object> jsonRtn = Object::New(isolate);
+		jsonRtn->Set(String::NewFromUtf8(isolate, "InstrumentID"), String::NewFromUtf8(isolate, pInstrumentCommissionRate->InstrumentID));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "InvestorRange"), String::NewFromUtf8(isolate, charto_string(pInstrumentCommissionRate->InvestorRange).c_str()));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "BrokerID"), String::NewFromUtf8(isolate, pInstrumentCommissionRate->BrokerID));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "InvestorID"), String::NewFromUtf8(isolate, pInstrumentCommissionRate->InvestorID));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "OpenRatioByMoney"), Number::New(isolate, pInstrumentCommissionRate->OpenRatioByMoney));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "OpenRatioByVolume"), Number::New(isolate, pInstrumentCommissionRate->OpenRatioByVolume));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "CloseRatioByMoney"), Number::New(isolate, pInstrumentCommissionRate->CloseRatioByMoney));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "CloseRatioByVolume"), Number::New(isolate, pInstrumentCommissionRate->CloseRatioByVolume));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "CloseTodayRatioByMoney"), Number::New(isolate, pInstrumentCommissionRate->CloseTodayRatioByMoney));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "CloseTodayRatioByVolume"), Number::New(isolate, pInstrumentCommissionRate->CloseTodayRatioByVolume));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "ExchangeID"), String::NewFromUtf8(isolate, pInstrumentCommissionRate->ExchangeID));
+		jsonRtn->Set(String::NewFromUtf8(isolate, "BizType"), String::NewFromUtf8(isolate, charto_string(pInstrumentCommissionRate->BizType).c_str()));
+    *(cbArray + 2) = jsonRtn;
+	}
+	else {
+	    *(cbArray + 2) = Local<Value>::New(isolate, Undefined(isolate));
+    }
+	*(cbArray + 3) = pkg_rspinfo(data->rspInfo);
+	return;
+}
+
+
 void WrapTrader::pkg_cb_rsperror(CbRtnField* data, Local<Value>*cbArray) {
 	Isolate *isolate = Isolate::GetCurrent();
 
